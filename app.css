@@ -18,6 +18,27 @@ html,body {
 		z-index:0
 	}
 	
+#restaurantinfo{
+	display:inline-flex
+}	
+	
+#restauranttitle {
+}
+
+#restaurantinfo1 {
+	
+}
+	
+#restaurantinfo2 {
+	
+}
+
+.infopopup .leaflet-popup-tip,
+.infopopup .leaflet-popup-content-wrapper {
+	background: #000000;
+	color: #FFFFFF
+}
+
 #timeSlider {
 	 width:100%; 
 	 height: 100%
