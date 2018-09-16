@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="stylesheet" href="./app.css" />
+		<link rel="stylesheet" href="../css/app.less" />
 		<title>Getting started with WRLD</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
@@ -11,12 +11,15 @@
 	<body>
 		
 		<div id="widget-container" class="wrld-widget-container"></div>
-		<div id="hidingslider" class="slidecontainer" >
-			<input type="range" onchange="sliderChange(this.value);" min="-72" max="0" value="0" class="slider" id="timeSlider" step="0.5">
-			<output id="sliderValue">0</output>
+		<div class="customUIContainer">
+			<div id="hidingslider" class="slidecontainer" >
+				<input type="range" onchange="sliderChange(this.value);" min="-72" max="0" value="0" class="slider" id="timeSlider" step="0.5">
+				<output id="sliderValue">0</output>
+			</div>
+			<div id="map"></div>
 		</div>
-		<div id="map"></div>
-		<script src="./app.js"></script>
+		
+		<script src="../js/app.js"></script>
 		<script>function sliderChange(val) {
 				document.getElementById('sliderValue').innerHTML = val;
 			}
