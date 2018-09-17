@@ -9,3 +9,4 @@ This will install less locally as parcel can already deal with less built in!
 
 4.To build project with parcel now in teamwrldproject directory:
 parcel view/web/index.html
+
