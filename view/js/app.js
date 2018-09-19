@@ -95,15 +95,17 @@ map.openPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></d
 [56.460237, -2.977746], {indoorMapId: 'westport_house', indoorMapFloorId: 0, closeOnClick: false, keepInView: true, closeButton: false, className: 'infopopup', autoClose: false});
 
 var exteriorMarker = L.marker([56.459913, -2.977985], { elevation : 10 , title: "Westport Hotel Restaurant"}).addTo(map);
-
-/* exteriorMarker.bindPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></div>\
+var exteriorMarker2 = L.marker([56.459913, -2.977985], { elevation : 20 , title: "Westport Hotel Restaurant"}).addTo(map);
+/* var exteriorMarker2 = L.marker([56.459913, -2.977985], { elevation : 20 , title: "Westport Hotel Restaurant2"}).addTo(map);
+ exteriorMarker2.bindPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></div>\
 <div id=\"restaurantinfo\">\
 	<div id=\"restaurantinfo1\"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ut nulla vitae felis feugiat scelerisque eget eu sapien.</div>\
 	<div id=\"restaurantinfo2\"><p>Suspendisse faucibus arcu sapien, non cursus enim venenatis vel. In purus ex, viverra at ex et, luctus pharetra ex. Curabitur a lectus sed ante luctus vestibulum. </p></div>\
-</div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false}).openPopup();
-	 */
+</div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false}).openPopup(); */
+	 
 	 
 	//exteriorMarker.bindPopup(	, {className: 'infopopupexterior', closeOnClick: false, autoClose: false}).openPopup();
+	
 function onEnter(event) {
     console.log("Entered indoor map: " + event.indoorMap.getIndoorMapName());
 	document.getElementById("hidingslider").style.display = "block";
@@ -124,13 +126,24 @@ map.indoors.on("indoormapenter", onEnter);
 map.indoors.on("indoormapexit", onExit);
 
 
-	
-/* exteriormarker.unbindPopup().bindPopup(title, { 
+
+//This creates a graph in the exterior popup
+let title = document.getElementById("mydiv");
+let title2 = document.getElementById("mydiv2");
+//exteriorMarker.bindPopup(""	, {className: 'infopopupexterior', closeOnClick: false, autoClose: false}).openPopup();
+ exteriorMarker2.unbindPopup().bindPopup(title2,{
+   className: 'infopopupexterior1',
   autoPan:true,
   maxWidth: "auto"
-}).openPopup(); */
+}).openPopup();
 
-/* exteriorMarker.addTo(this.iconLayer); */
+exteriorMarker.unbindPopup().bindPopup(title, { 
+  className: 'infopopupexterior',
+  autoPan:true,
+  maxWidth: "auto"
+}).openPopup();
+
+//exteriorMarker.addTo(this.iconLayer); 
 
 exteriorMarker.on("click", (event, MouseEvent) => {
   let ctx = document.getElementById("myChart");
@@ -140,8 +153,8 @@ exteriorMarker.on("click", (event, MouseEvent) => {
       labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
       datasets: [{
         label: 'Grafik',
-        data: [2, 29, 5, 5, 2, 3, 10],
-        backgroundColor: "rgba(255,153,0,0.4)"
+        data: [19, 29, 70, 35, 35, 33, 24],
+        backgroundColor: "rgba(255,255,0,0.4)"
       }]
     },
     options: {
