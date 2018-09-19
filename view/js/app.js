@@ -82,8 +82,18 @@ var chair1LatLong = [
   poly1.bindPopup(chairPopup).openPopup();
 
 //
+  var buildingLatLong = [
+    [56.459780, -2.978628],
+	[56.460245, -2.978793],
+	[56.460350, -2.978019],
+	[56.460018, -2.977921],
+	[56.460005, -2.978004],
+	[56.459906, -2.977976],
+    [56.459857, -2.978132]
+  ]
 
-
+  var buildingPoly = L.polygon(buildingLatLong, {color: '#7aebff'}).addTo(map);
+  
 var indoorControl = new WrldIndoorControl('widget-container', map);	
 
 map.openPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></div>\
@@ -93,13 +103,28 @@ map.openPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></d
 </div>", 
 [56.460237, -2.977746], {indoorMapId: 'westport_house', indoorMapFloorId: 0, closeOnClick: false, keepInView: true, closeButton: false, className: 'infopopup', autoClose: false});
 
-var exteriorMarker = L.marker([56.459913, -2.977985], { elevation : 10 , title: "Westport Hotel Restaurant"}).addTo(map);
+//var exteriorMarker = L.marker([56.459913, -2.977985], { elevation : 10 , title: "Westport Hotel Restaurant"}).addTo(map);
 
-exteriorMarker.bindPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></div>\
-<div id=\"restaurantinfo\">\
-	<div id=\"restaurantinfo1\"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ut nulla vitae felis feugiat scelerisque eget eu sapien.</div>\
-	<div id=\"restaurantinfo2\"><p>Suspendisse faucibus arcu sapien, non cursus enim venenatis vel. In purus ex, viverra at ex et, luctus pharetra ex. Curabitur a lectus sed ante luctus vestibulum. </p></div>\
-</div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false}).openPopup();
+buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant</h2></div>\
+<div id='restaurantinfo'>\
+	<div id='restaurantinfo1'><p>Occupancy graph here</div>\
+	<div id='restaurantinfo2'><p>Seats available here</p></div>\
+	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
+	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
+	<div id='restaurantphoto'><p>Photo here</p></div>\
+</div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
+	
+function clickBuilding(event) {
+	this.getPopup().setLatLng(this.getCenter());
+}	
+
+function mouseOverBuilding(event) {
+	this.setStyle({color: '#bff5ff'});
+}	
+	
+function mouseOutBuilding(event) {
+	this.setStyle({color: '#7aebff'});
+}	
 	
 function onEnter(event) {
     console.log("Entered indoor map: " + event.indoorMap.getIndoorMapName());
@@ -119,3 +144,6 @@ function onExit(event) {
 }
 map.indoors.on("indoormapenter", onEnter);
 map.indoors.on("indoormapexit", onExit);
+buildingPoly.on("mouseover", mouseOverBuilding);
+buildingPoly.on("mouseout", mouseOutBuilding);
+buildingPoly.on("click", clickBuilding);
