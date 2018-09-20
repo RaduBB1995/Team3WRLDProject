@@ -110,18 +110,23 @@ map.openPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></d
 buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant</h2></div>\
 <div id='restaurantinfo'><svg height='100' width='500' >\
 						<rect  x='30' y='75' width= '200' height='10' stroke='black' stroke-width='4' fill='red'  />\
-						<rect id = 't' x='30' y='77' width= '200' height='6' stroke='black' stroke-width='0' fill='green' />\
-					</svg>\
+						</svg>\
+						<svg height='100' width='500' >\
+						<rect id = 't' x='30' y='77' width= '0' height='6' stroke='black' stroke-width='0' fill='green' />\
+						</svg>\
 					</div>\
 	<div id='restaurantinfo2'><p>Seats available here</p></div>\
 	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
 	<div id='restaurantphoto'><p>Photo here</p></div>\
-</div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
+</div>", {className: 'infopopupexterior', closeOnClick: false, closeButton: true, autoClose: false, offset:[0,-50]}).openPopup();
 	
-
+var n = 50;
 function clickBuilding(event) {
+	document.getElementById("t").setAttribute('width', n);
 	this.getPopup().setLatLng(this.getCenter());
+	this.getPopup().setContent();
+	
 }	
 
 function mouseOverBuilding(event) {
@@ -163,19 +168,41 @@ buildingPoly2.unbindPopup().bindPopup(title, {
 }).openPopup();
 
 buildingPoly2.on("click", (event, MouseEvent) => {
-  let ctx = document.getElementById("myChart");
-  let myChart = new Chart(ctx, {
-    type: 'line',
+var ctx = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'pie',
     data: {
-      labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-      datasets: [{
-        label: 'Grafik',
-        data: [19, 29, 70, 35, 35, 33, 24],
-        backgroundColor: "rgba(255,255,0,0.4)"
-      }]
+        labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
+        datasets: [{
+            label: '# of Votes',
+            data: [n, 15, 3, 5, 2, 3],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255,99,132,1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
     },
     options: {
-      responsive: true
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
     }
-  });
+});
 });
