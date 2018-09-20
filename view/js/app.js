@@ -14,6 +14,15 @@ const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 	indoorsEnabled: true,
 })
 
+window.onload = function() {
+	console.log("Building popup is open?: " + buildingPoly.isPopupOpen());
+	setInterval(function() {
+		if(document.getElementById('timeSlider').value != 0){
+			document.getElementById('timeSlider').value += 0.25;
+		}
+	},900000);
+}
+
 //
 // Table 1
 var chair1LatLong = [
@@ -111,13 +120,14 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 	<div id='restaurantinfo2'><p>Seats available here</p></div>\
 	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
+	<div id='westportinfo'><p><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
 	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
 </div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
 	
 function sliderToHour() {	
 	//assuming the slider goes from day 1 midnight at -72 to day 3 midnight at 0
 	//none of this actually works right now because the slider only appears when the 
-	var slide = this.value;
+	var slide = document.getElementById('timeSlider').value;
 	console.log("Slider is at: " + slide);
 	var hour = Math.abs(slide % 24); //remainder is equivalent to relative simulated time
 	console.log("Relative time is: " + hour);
@@ -140,6 +150,11 @@ function sliderToHour() {
 		buildingPoly.getPopup().setContent(); //this... shouldn't work. it should empty the popup's contents. and yet it works as a better updater than their own update() method.
 		//console.log(buildingPoly.getPopup().getContent());
 	}
+}
+
+function checkValue(event) {
+	console.log("Popup opened");
+	sliderToHour();
 }
 	
 function clickBuilding(event) {
@@ -180,4 +195,5 @@ map.indoors.on("indoormapenter", onEnter);
 buildingPoly.on("mouseover", mouseOverBuilding);
 buildingPoly.on("mouseout", mouseOutBuilding);
 buildingPoly.on("click", clickBuilding);
+buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
