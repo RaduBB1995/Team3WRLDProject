@@ -111,8 +111,36 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 	<div id='restaurantinfo2'><p>Seats available here</p></div>\
 	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
-	<div id='restaurantphoto'><p>Photo here</p></div>\
+	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
 </div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
+	
+function sliderToHour() {	
+	//assuming the slider goes from day 1 midnight at -72 to day 3 midnight at 0
+	//none of this actually works right now because the slider only appears when the 
+	var slide = this.value;
+	console.log("Slider is at: " + slide);
+	var hour = Math.abs(slide % 24); //remainder is equivalent to relative simulated time
+	console.log("Relative time is: " + hour);
+	if (hour >= 17 && hour < 23) {
+		//console.log("Restaurant open");
+		//hide element saying restaurant is closed, show element saying restaurant is open
+		document.getElementById('restaurantopen').style.display = 'block';
+		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
+		document.getElementById('restaurantclosed').style.display = 'none';
+		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
+		buildingPoly.getPopup().setContent();
+	}else{
+		//console.log("Restaurant closed");
+		//console.log(buildingPoly.getPopup().getContent());
+		//hide element saying restaurant is open, show element saying restaurant is closed
+		document.getElementById('restaurantopen').style.display = 'none';
+		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
+		document.getElementById('restaurantclosed').style.display = 'block';
+		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
+		buildingPoly.getPopup().setContent(); //this... shouldn't work. it should empty the popup's contents. and yet it works as a better updater than their own update() method.
+		//console.log(buildingPoly.getPopup().getContent());
+	}
+}
 	
 function clickBuilding(event) {
 	this.getPopup().setLatLng(this.getCenter());
@@ -128,7 +156,7 @@ function mouseOutBuilding(event) {
 	
 function onEnter(event) {
     console.log("Entered indoor map: " + event.indoorMap.getIndoorMapName());
-	document.getElementById("hidingslider").style.display = "block";
+	//document.getElementById("hidingslider").style.display = "block";
 	setTimeout(function() {
 			map.setView([56.460196, -2.978106], 19.75, {
 			headingDegrees: 169,
@@ -142,8 +170,14 @@ function onExit(event) {
     console.log("Exited indoor map");
 	document.getElementById("hidingslider").style.display = "none";
 }
+$.fn.redraw = function(){
+  $(this).each(function(){
+    var redraw = this.offsetHeight;
+  });
+};
 map.indoors.on("indoormapenter", onEnter);
-map.indoors.on("indoormapexit", onExit);
+//map.indoors.on("indoormapexit", onExit);
 buildingPoly.on("mouseover", mouseOverBuilding);
 buildingPoly.on("mouseout", mouseOutBuilding);
 buildingPoly.on("click", clickBuilding);
+$("#timeSlider").on("change", sliderToHour);
