@@ -1,6 +1,7 @@
-const Wrld = require('wrld.js');
-const env = require('./env');
 const { getChairPolys } = require('./api-service');
+const Wrld = require("wrld.js");
+const env = require('./env');
+
 
 //Seat colour variable that is set later after fetching relevant data
 let seatcolour = "";
@@ -10,10 +11,6 @@ const actualChairInfo =[];
 
 //get WRLD api key
 
-const Wrld = require("wrld.js");
-const env = require('./env');
-
-
 const keys = {
   wrld: env.WRLD_KEY,
 };
@@ -21,12 +18,23 @@ const keys = {
 const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 
 	center: [56.459900, -2.977970],
-	
+
 	zoom: 18,
-	
+
 	indoorsEnabled: true,
 })
-
+const chairGroup = new L.featureGroup();
+chairGroup.on('click', function(e)
+ {
+   console.log("Chair clicked");
+   e.layer.bindPopup("Chair #" + chairGroup.getLayerId(e.layer), {closeOnClick: false, autoClose:false, }).openPopup();
+   e.layer.on("click", function() {
+       console.log("clicked on chair " + chairGroup.getLayerId(e.layer))
+       console.log("at: " + e.layer.getPopup().getLatLng());
+       map.setView(e.layer.getPopup().getLatLng(), 21.5, {animate:true});
+       });
+}
+);
 //Events for page onLoad
 window.addEventListener('load', async () => {
   const indoorMapId = 'westport_house';
@@ -50,7 +58,9 @@ window.addEventListener('load', async () => {
         seatcolour = "#00f272"
       }
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-      L.polygon(currentChair.Coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
+      var polyChair = L.polygon(currentChair.Coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0});
+      chairGroup.addLayer(polyChair);
+      polyChair.addTo(map);
     });
   });
   const indoorControl = new WrldIndoorControl('widget-container', map);
@@ -77,14 +87,14 @@ window.onload = function() {
   ]
 
   var buildingPoly = L.polygon(buildingLatLong, {color: '#7aebff'}).addTo(map);
-  
-var indoorControl = new WrldIndoorControl('widget-container', map);	
+
+var indoorControl = new WrldIndoorControl('widget-container', map);
 
 map.openPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></div>\
 <div id=\"restaurantinfo\">\
 	<div id=\"restaurantinfo1\"><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent ut nulla vitae felis feugiat scelerisque eget eu sapien.</div>\
 	<div id=\"restaurantinfo2\"><p>Suspendisse faucibus arcu sapien, non cursus enim venenatis vel. In purus ex, viverra at ex et, luctus pharetra ex. Curabitur a lectus sed ante luctus vestibulum. </p></div>\
-</div>", 
+</div>",
 [56.460237, -2.977746], {indoorMapId: 'westport_house', indoorMapFloorId: 0, closeOnClick: false, keepInView: true, closeButton: false, className: 'infopopup', autoClose: false});
 
 //var exteriorMarker = L.marker([56.459913, -2.977985], { elevation : 10 , title: "Westport Hotel Restaurant"}).addTo(map);
@@ -98,10 +108,10 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 	<div id='westportinfo'><p><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
 	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
 </div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
-	
-function sliderToHour() {	
+
+function sliderToHour() {
 	//assuming the slider goes from day 1 midnight at -72 to day 3 midnight at 0
-	//none of this actually works right now because the slider only appears when the 
+	//none of this actually works right now because the slider only appears when the
 	var slide = document.getElementById('timeSlider').value;
 	console.log("Slider is at: " + slide);
 	var hour = Math.abs(slide % 24); //remainder is equivalent to relative simulated time
@@ -131,19 +141,19 @@ function checkValue(event) {
 	console.log("Popup opened");
 	sliderToHour();
 }
-	
+
 function clickBuilding(event) {
 	this.getPopup().setLatLng(this.getCenter());
-}	
+}
 
 function mouseOverBuilding(event) {
 	this.setStyle({color: '#bff5ff'});
-}	
-	
+}
+
 function mouseOutBuilding(event) {
 	this.setStyle({color: '#7aebff'});
-}	
-	
+}
+
 function onEnter(event) {
     console.log("Entered indoor map: " + event.indoorMap.getIndoorMapName());
 	//document.getElementById("hidingslider").style.display = "block";
@@ -172,4 +182,3 @@ buildingPoly.on("mouseout", mouseOutBuilding);
 buildingPoly.on("click", clickBuilding);
 buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
-
