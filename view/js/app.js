@@ -9,6 +9,11 @@ let seatcolour = "";
 const actualChairInfo =[];
 
 //get WRLD api key
+
+const Wrld = require("wrld.js");
+const env = require('./env');
+
+
 const keys = {
   wrld: env.WRLD_KEY,
 };
@@ -60,7 +65,6 @@ window.onload = function() {
 		}
 	},900000);
 }
-
 //
   var buildingLatLong = [
     [56.459780, -2.978628],
@@ -168,3 +172,4 @@ buildingPoly.on("mouseout", mouseOutBuilding);
 buildingPoly.on("click", clickBuilding);
 buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
+
