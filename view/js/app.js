@@ -196,7 +196,7 @@ buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
 chairs.eachLayer(
 	function(layer) {
-		layer.bindPopup("Chair #" + chairs.getLayerId(layer), {indoorMapId: 'westport_house', indoorMapFloorId: 0, closeOnClick: false, autoClose:false, }).openPopup();
+		layer.bindPopup("Chair #" + chairs.getLayerId(layer), {indoorMapId: 'westport_house', indoorMapFloorId: 0, closeOnClick: false, autoClose:true, }).openPopup();
 		layer.on("click", function() {
 			console.log("clicked on chair " + chairs.getLayerId(layer))
 			console.log("at: " + layer.getPopup().getLatLng());
