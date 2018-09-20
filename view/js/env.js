@@ -1,3 +1,3 @@
 module.exports = {
-  WRLD_KEY: 'af49d6c782e4fd916dc373d942d90e17',
- };
+    WRLD_KEY: '65367fd6a1254b28843e482cbfade28d',
+};

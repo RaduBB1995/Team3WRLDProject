@@ -21,7 +21,14 @@ html,body {
 
 	
 #restaurantinfo{
-	display:inline-flex
+
+	.shown{
+		display: block;
+	}
+
+	.hidden{
+		display: none;
+	}
 }	
 	
 #restauranttitle {
@@ -35,16 +42,21 @@ html,body {
 	
 }
 
+#restaurantphoto {
+	
+}
+
+
 .infopopup .leaflet-popup-tip,
 .infopopup .leaflet-popup-content-wrapper {
-	background: #000000;
-	color: #FFFFFF
+	background: #FFFFFF;
+	color: #000000
 }
 
 .infopopupexterior .leaflet-popup-tip,
 .infopopupexterior .leaflet-popup-content-wrapper {
-	background: #000000;
-	color: #FFFFFF
+	background: #FFFFFF;
+	color: #000000
 }
 
 
@@ -56,7 +68,7 @@ html,body {
 .slidecontainer {
 	width:99vw; 
 	height: 30px; 
-	display: none;
+	display: block;
 	position:absolute;
 	bottom:25px;
 	left:5px;
@@ -66,7 +78,6 @@ html,body {
 #sliderValue {
 	color:white;
 	width: 100%;
-	display: none;
 }
 
 .customUIContainer {
