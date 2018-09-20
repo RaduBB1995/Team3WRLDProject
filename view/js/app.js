@@ -23,16 +23,18 @@ const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 
 	indoorsEnabled: true,
 })
+
+//Declare new feature group for all chair polygons
 const chairGroup = new L.featureGroup();
+
+//Add on clickevent for all layers in featureGroup
 chairGroup.on('click', function(e)
  {
    console.log("Chair clicked");
-   e.layer.bindPopup("Chair #" + chairGroup.getLayerId(e.layer), {closeOnClick: false, autoClose:false, }).openPopup();
-   e.layer.on("click", function() {
-       console.log("clicked on chair " + chairGroup.getLayerId(e.layer))
-       console.log("at: " + e.layer.getPopup().getLatLng());
-       map.setView(e.layer.getPopup().getLatLng(), 21.5, {animate:true});
-       });
+   e.layer.bindPopup("Chair #" + chairGroup.getLayerId(e.layer), {closeOnClick: false, autoClose:true, indoorMapId: 'westport_house', indoorMapFloorId: 0}).openPopup();
+   console.log("clicked on chair " + chairGroup.getLayerId(e.layer))
+   console.log("at: " + e.layer.getPopup().getLatLng());
+   map.setView(e.layer.getPopup().getLatLng(), 21.5, {animate:true});
 }
 );
 //Events for page onLoad
@@ -57,9 +59,11 @@ window.addEventListener('load', async () => {
       }else if(currentChair.Occupied === false && currentChair.RecentlyOccupied === false){
         seatcolour = "#00f272"
       }
-      //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
+      //Create variable for leaflet polygon
       var polyChair = L.polygon(currentChair.Coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0});
+      //add created variable to featureGroup
       chairGroup.addLayer(polyChair);
+      //add polygon to map
       polyChair.addTo(map);
     });
   });
