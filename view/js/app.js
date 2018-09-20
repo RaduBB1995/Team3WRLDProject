@@ -10,9 +10,6 @@ const actualChairInfo =[];
 
 //get WRLD api key
 
-const Wrld = require("wrld.js");
-const env = require('./env');
-
 
 const keys = {
   wrld: env.WRLD_KEY,
@@ -77,8 +74,6 @@ window.onload = function() {
   ]
 
   var buildingPoly = L.polygon(buildingLatLong, {color: '#7aebff'}).addTo(map);
-  
-var indoorControl = new WrldIndoorControl('widget-container', map);	
 
 map.openPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></div>\
 <div id=\"restaurantinfo\">\
