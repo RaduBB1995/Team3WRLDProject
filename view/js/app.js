@@ -11,6 +11,8 @@ const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 	
 	zoom: 18,
 	
+	maxZoom: 40,
+	
 	indoorsEnabled: true,
 })
 
@@ -85,10 +87,9 @@ var chair1LatLong = [
   var poly7 = L.polygon(chair7LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
   var poly8 = L.polygon(chair8LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
 
+  var chairs = L.featureGroup([poly1, poly2, poly3, poly4, poly5, poly6, poly7, poly8]);
 
   var chairPopup = L.popup().setContent('<p>Test</p>');
-
-  poly1.bindPopup(chairPopup).openPopup();
 
 //
   var buildingLatLong = [
@@ -185,11 +186,7 @@ function onExit(event) {
     console.log("Exited indoor map");
 	document.getElementById("hidingslider").style.display = "none";
 }
-$.fn.redraw = function(){
-  $(this).each(function(){
-    var redraw = this.offsetHeight;
-  });
-};
+
 map.indoors.on("indoormapenter", onEnter);
 //map.indoors.on("indoormapexit", onExit);
 buildingPoly.on("mouseover", mouseOverBuilding);
@@ -197,3 +194,13 @@ buildingPoly.on("mouseout", mouseOutBuilding);
 buildingPoly.on("click", clickBuilding);
 buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
+chairs.eachLayer(
+	function(layer) {
+		layer.bindPopup("Chair #" + chairs.getLayerId(layer), {indoorMapId: 'westport_house', indoorMapFloorId: 0, closeOnClick: false, autoClose:false, }).openPopup();
+		layer.on("click", function() {
+			console.log("clicked on chair " + chairs.getLayerId(layer))
+			console.log("at: " + layer.getPopup().getLatLng());
+			map.setView(layer.getPopup().getLatLng(), 21.4, {animate:true});
+			});
+	}
+);
