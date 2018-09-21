@@ -2,25 +2,25 @@
 <!doctype html>
 <html lang="en">
 	<head>
-		<meta charset="utf-8" />
-		<link rel="stylesheet" href="../css/app.less" />
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="/app.a7aa084b.css">
 		<title>Getting started with WRLD</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/latest/indoor_control.js"></script>
-	</head>
+	<script src="/app.a7aa084b.js"></script></head>
 	<body>
 		
 		<div id="widget-container" class="wrld-widget-container"></div>
 		<div class="customUIContainer">
-			<div id="hidingslider" class="slidecontainer" >
+			<div id="hidingslider" class="slidecontainer">
 				<input type="range" onchange="sliderChange(this.value);" min="-48" max="0" value="0" class="slider" id="timeSlider" step="0.5">
 				<output id="sliderValue">0</output>
 			</div>
 			<div id="map"></div>
 		</div>
 		
-		<script src="../js/app.js"></script>
+		<script src="/app.841365aa.js"></script>
 		<script>function sliderChange(val) {
 				document.getElementById('sliderValue').innerHTML = val;
 			}

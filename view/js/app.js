@@ -1,5 +1,16 @@
-const Wrld = require("wrld.js");
+const Wrld = require('wrld.js');
 const env = require('./env');
+const { getChairPolys } = require('./api-service');
+const get_Tstamp = require('./get_timestamp');
+
+//Seat colour variable that is set later after fetching relevant data
+let seatcolour = "";
+
+//Array of JS objects we place our desired chairs into
+const actualChairInfo =[];
+
+//get WRLD api key
+
 
 const keys = {
   wrld: env.WRLD_KEY,
@@ -11,10 +22,40 @@ const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 	
 	zoom: 18,
 	
-	maxZoom: 40,
-	
 	indoorsEnabled: true,
 })
+
+//Events for page onLoad
+window.addEventListener('load', async () => {
+  const indoorMapId = 'westport_house';
+  map.on('initialstreamingcomplete', async () => {
+    //Run external script to connect to JSON server
+    
+    
+    const chairPolys = await getChairPolys();
+    //Returns all the Data from the JSON file
+    chairPolys.forEach((chairPoly) => {
+        //Only return chair information for the timestamp we want, in this case 11AM on the first day
+        if(chairPoly.TimeStamp === "2018-09-01 12:00:00"){
+          actualChairInfo.push(chairPoly);
+        }
+    });
+    //Go through each chair that we wanted, apply colours depending on the state of the seat
+    actualChairInfo.forEach((currentChair) => {
+      if(currentChair.Occupied === true){
+        seatcolour = "#fe022f";
+      }else if(currentChair.Occupied === false && currentChair.RecentlyOccupied === true){
+        seatcolour = "#f0e46e";
+      }else if(currentChair.Occupied === false && currentChair.RecentlyOccupied === false){
+        seatcolour = "#00f272"
+      }
+      //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
+      L.polygon(currentChair.Coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
+    });
+  });
+  const indoorControl = new WrldIndoorControl('widget-container', map);
+  });
+
 
 window.onload = function() {
 	console.log("Building popup is open?: " + buildingPoly.isPopupOpen());
@@ -24,73 +65,6 @@ window.onload = function() {
 		}
 	},900000);
 }
-
-//
-// Table 1
-var chair1LatLong = [
-    [56.460166, -2.978128],
-    [56.460167, -2.978121],
-    [56.460162, -2.978119],
-    [56.460161, -2.978127],
-  ];
-  var chair2LatLong = [
-    [56.460156, -2.978124],
-    [56.460156, -2.978117],
-    [56.460152, -2.978115],
-    [56.460151, -2.978123],
-  ];
-  var chair3LatLong = [
-    [56.460146, -2.978121],
-    [56.460147, -2.978113],
-    [56.460143, -2.978112],
-    [56.460142, -2.978119],
-  ];
-  var chair4LatLong = [
-    [56.460138, -2.978117],
-    [56.460139, -2.978110],
-    [56.460134, -2.978108],
-    [56.460134, -2.978116],
-  ];
-  var chair5LatLong = [
-    [56.460169, -2.978095],
-    [56.460170, -2.978089],
-    [56.460167, -2.978087],
-    [56.460165, -2.978093],
-  ];
-  var chair6LatLong = [
-    [56.460159, -2.978091],
-    [56.460160, -2.978085],
-    [56.460156, -2.978083],
-    [56.460155, -2.978090],
-  ];
-  var chair7LatLong = [
-    [56.460150, -2.978088],
-    [56.460151, -2.978081],
-    [56.460147, -2.978080],
-    [56.460146, -2.978086],
-  ];
-  var chair8LatLong = [
-    [56.460141, -2.978084],
-    [56.460142, -2.978078],
-    [56.460138, -2.978076],
-    [56.460137, -2.978083],
-  ];
-
-
-
-  var poly1 = L.polygon(chair1LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
-  var poly2 = L.polygon(chair2LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
-  var poly3 = L.polygon(chair3LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
-  var poly4 = L.polygon(chair4LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
-  var poly5 = L.polygon(chair5LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
-  var poly6 = L.polygon(chair6LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
-  var poly7 = L.polygon(chair7LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
-  var poly8 = L.polygon(chair8LatLong, {color: '#5cf442', indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
-
-  var chairs = L.featureGroup([poly1, poly2, poly3, poly4, poly5, poly6, poly7, poly8]);
-
-  var chairPopup = L.popup().setContent('<p>Test</p>');
-
 //
   var buildingLatLong = [
     [56.459780, -2.978628],
@@ -103,8 +77,6 @@ var chair1LatLong = [
   ]
 
   var buildingPoly = L.polygon(buildingLatLong, {color: '#7aebff'}).addTo(map);
-  
-var indoorControl = new WrldIndoorControl('widget-container', map);	
 
 map.openPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></div>\
 <div id=\"restaurantinfo\">\
@@ -125,6 +97,12 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
 </div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
 	
+
+function convert_slider_2_timestamp(sliderHour, sliderValue){
+		var a = get_Tstamp.calculate_Tstamp(sliderHour,sliderValue);
+		console.log("and away we go: " + a);
+}
+
 function sliderToHour() {	
 	//assuming the slider goes from day 1 midnight at -72 to day 3 midnight at 0
 	//none of this actually works right now because the slider only appears when the 
@@ -132,6 +110,11 @@ function sliderToHour() {
 	console.log("Slider is at: " + slide);
 	var hour = Math.abs(slide % 24); //remainder is equivalent to relative simulated time
 	console.log("Relative time is: " + hour);
+
+	//passing hour value to be used to calculate which timestamp to use
+	convert_slider_2_timestamp(hour,slide);
+	
+
 	if (hour >= 17 && hour < 23) {
 		//console.log("Restaurant open");
 		//hide element saying restaurant is closed, show element saying restaurant is open
@@ -186,7 +169,11 @@ function onExit(event) {
     console.log("Exited indoor map");
 	document.getElementById("hidingslider").style.display = "none";
 }
-
+$.fn.redraw = function(){
+  $(this).each(function(){
+    var redraw = this.offsetHeight;
+  });
+};
 map.indoors.on("indoormapenter", onEnter);
 //map.indoors.on("indoormapexit", onExit);
 buildingPoly.on("mouseover", mouseOverBuilding);
@@ -194,13 +181,4 @@ buildingPoly.on("mouseout", mouseOutBuilding);
 buildingPoly.on("click", clickBuilding);
 buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
-chairs.eachLayer(
-	function(layer) {
-		layer.bindPopup("Chair #" + chairs.getLayerId(layer), {indoorMapId: 'westport_house', indoorMapFloorId: 0, closeOnClick: false, autoClose:true, }).openPopup();
-		layer.on("click", function() {
-			console.log("clicked on chair " + chairs.getLayerId(layer))
-			console.log("at: " + layer.getPopup().getLatLng());
-			map.setView(layer.getPopup().getLatLng(), 21.4, {animate:true});
-			});
-	}
-);
+
