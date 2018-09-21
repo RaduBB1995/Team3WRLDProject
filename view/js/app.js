@@ -18,36 +18,88 @@ const keys = {
 const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 
 	center: [56.459900, -2.977970],
-	
+	maxZoom: 30,
 	zoom: 18,
 	
 	indoorsEnabled: true,
 })
+//Declare new feature group for all chair polygons
+const chairGroup = new L.featureGroup();
 
+//Add on clickevent for all layers in featureGroup
+chairGroup.on('click', function(e)
+ {
+   console.log("Chair clicked");
+   //e.layer.bindPopup("Chair #" + chairGroup.getLayerId(e.layer), {closeOnClick: false, autoClose:true, indoorMapId: 'westport_house', indoorMapFloorId: 0}).openPopup();
+   //console.log("clicked on chair " + chairGroup.getLayerId(e.layer))
+   //console.log("at: " + e.layer.getPopup().getLatLng());
+   map.setView(e.layer.getPopup().getLatLng(), 21.35, {animate:true});
+}
+);
 //Events for page onLoad
 window.addEventListener('load', async () => {
+  console.log("onload");
   const indoorMapId = 'westport_house';
   map.on('initialstreamingcomplete', async () => {
     //Run external script to connect to JSON server
+	console.log("initial stream complete");
     const chairPolys = await getChairPolys();
+	console.log("get chair polygons");
     //Returns all the Data from the JSON file
+	console.log(chairPolys);
     chairPolys.forEach((chairPoly) => {
+		//console.log("looping through polygons");
+		//console.log(chairPoly);
+		
         //Only return chair information for the timestamp we want, in this case 11AM on the first day
-        if(chairPoly.TimeStamp === "2018-09-01 12:00:00"){
+        if(chairPoly.properties.timestamp === "2018-09-01 12:00:00"){
+			//console.log("pushing polys with right timestamp");
           actualChairInfo.push(chairPoly);
-        }
+        } 
     });
-    //Go through each chair that we wanted, apply colours depending on the state of the seat
+    //Apply a popup containing a div with the chair's id to each polygon
+	/* function onEachFeature(feature, layer) {
+		console.log("Binding popups");
+		layer.bindPopup("<div id=" + feature.properties.chairID + ">Chair #" + feature.properties.chairID + "</div>");
+	} */
+	//console.log(actualChairInfo);
+	//Go through each chair that we wanted, apply colours depending on the state of the seat	
+	/* L.geoJSON(actualChairInfo, {
+		//onEachFeature: onEachFeature,
+		style: function(feature) {
+			switch (feature.properties.status) {
+				case 'occupied': return {color: "#fe022f"};
+				case 'unoccupied' : return {color: "#f0e46e"};
+				case 'recentlyOccupied': return {color: "#00f272"};
+			}
+		}
+	}).bindPopup(function (layer) {
+		return "<div id='" + layer.feature.properties.chairID + "'></div>";
+	}).addTo(map); */
     actualChairInfo.forEach((currentChair) => {
-      if(currentChair.Occupied === true){
+      if(currentChair.properties.status === "occupied"){
         seatcolour = "#fe022f";
-      }else if(currentChair.Occupied === false && currentChair.RecentlyOccupied === true){
+      }else if(currentChair.properties.status === "recentlyOccupied"){
         seatcolour = "#f0e46e";
-      }else if(currentChair.Occupied === false && currentChair.RecentlyOccupied === false){
+      }else if(currentChair.properties.status === "notOccupied"){
         seatcolour = "#00f272"
       }
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-      L.polygon(currentChair.Coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).addTo(map);
+      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div id=chair" + currentChair.properties.chairID 
+																																				+ ">Chair #" + currentChair.properties.chairID 
+																																				+ "<div id=" + currentChair.properties.chairID +"occupancy>" 
+																																				+ currentChair.properties.status 
+																																				+ "</div>" 
+																																				+ "</div>", 
+																																				{closeOnClick: false, 
+																																				autoClose:true, 
+																																				indoorMapId: 'westport_house', 
+																																				indoorMapFloorId: 0})
+																																				.addTo(map);
+	  //add created variable to featureGroup
+      chairGroup.addLayer(polyChair);
+      //add polygon to map
+      polyChair.addTo(map);
     });
   });
   const indoorControl = new WrldIndoorControl('widget-container', map);
@@ -95,8 +147,7 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 </div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
 	
 function sliderToHour() {	
-	//assuming the slider goes from day 1 midnight at -72 to day 3 midnight at 0
-	//none of this actually works right now because the slider only appears when the 
+	//assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
 	var slide = document.getElementById('timeSlider').value;
 	console.log("Slider is at: " + slide);
 	var hour = Math.abs(slide % 24); //remainder is equivalent to relative simulated time
