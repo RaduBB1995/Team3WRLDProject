@@ -46,17 +46,73 @@ html,body {
 	
 }
 
+.chairdiv{
+	width:100%;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.chairtitle {
+	color: #FFFFFF;
+	
+}
+
+.chairlastoccupied .chairdailyoccupants,
+.chairoccupancygraph .chairoccupancy {
+	background: #FFFFFF;
+	color: #000000
+}
 
 .infopopup .leaflet-popup-tip,
 .infopopup .leaflet-popup-content-wrapper {
 	background: #FFFFFF;
-	color: #000000
+	color: #000000;
+}
+
+.leaflet-popup-content{
+	color: black;
+}
+
+.leaflet-popup-content-wrapper {
+	
+	width: 100% !important;
+	line-height: 0;
+	text-align: center;
+	margin-top: -5px;
+	padding-left: 0;
+	padding-right: 0;
+	
+	.leaflet-popup-content {
+		color: purple !important;
+		margin: 0 !important;
+		margin-top: -17px !important;
+		display: block !important;
+		width: 100%;
+		left: 0 !important;
+		top: 0 !important;
+		border-bottom-left-radius: 12px;
+		border-bottom-right-radius: 12px;
+		border-top-left-radius: 12px;
+		border-top-right-radius: 12px;
+		border-radius: 25px !important;
+		padding-left:0 !important;
+		.chairtitle {
+			border-top-left-radius: 12px;
+			border-top-right-radius: 12px;
+		}
+		
+	}
+	
+}
+
+.leaflet-popup-close-button {
+	display: none;
 }
 
 .infopopupexterior .leaflet-popup-tip,
 .infopopupexterior .leaflet-popup-content-wrapper {
 	background: #FFFFFF;
-	color: #000000
+	color: #000000;
 }
 
 

@@ -36,6 +36,37 @@ chairGroup.on('click', function(e)
    map.setView(e.layer.getPopup().getLatLng(), 21.35, {animate:true});
 }
 );
+
+function getColour(chair){
+	if(chair.properties.status === "occupied"){
+		return "#fe022f";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "#f0e46e";
+	}else if(chair.properties.status === "notOccupied"){
+		return "#00f272";
+	}
+}
+
+function titleStatus(chair){
+	if(chair.properties.status === "occupied"){
+		return "Seat Unavailable";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "Waiting to be Cleared";
+	}else if(chair.properties.status === "notOccupied"){
+		return "Seat Available";
+	}
+}
+
+function chairStatus(chair){
+	if(chair.properties.status === "occupied"){
+		return "Taken";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "Being Cleared";
+	}else if(chair.properties.status === "notOccupied"){
+		return "Free";
+	}
+}
+
 //Events for page onLoad
 window.addEventListener('load', async () => {
   console.log("onload");
@@ -85,10 +116,21 @@ window.addEventListener('load', async () => {
         seatcolour = "#00f272"
       }
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div id=chair" + currentChair.properties.chairID 
-																																				+ ">Chair #" + currentChair.properties.chairID 
-																																				+ "<div id=" + currentChair.properties.chairID +"occupancy>" 
-																																				+ currentChair.properties.status 
+      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
+																																				//+ Chair #" + currentChair.properties.chairID 
+																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
+																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
+																																				+ "</div>" 
+																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
+																																				+ "Last Occupied: " //+ lastOccupied(currentChair)																																				+ "</div>" 
+																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
+																																				+ "Occupants Today: " //+ occupantsToday(currentChair)
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
+																																				+ "Occupancy graph here"
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
+																																				+ "Status: " + chairStatus(currentChair) 
 																																				+ "</div>" 
 																																				+ "</div>", 
 																																				{closeOnClick: false, 
@@ -105,7 +147,7 @@ window.addEventListener('load', async () => {
   const indoorControl = new WrldIndoorControl('widget-container', map);
   });
 
-
+  
 window.onload = function() {
 	console.log("Building popup is open?: " + buildingPoly.isPopupOpen());
 	setInterval(function() {
