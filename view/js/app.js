@@ -1,12 +1,15 @@
 const Wrld = require('wrld.js');
 const env = require('./env');
 const { getChairPolys } = require('./api-service');
-
+const get_Tstamp = require('./get_timestamp');
+const { findTimeStamp } = require('./process-search');
+let chairPolys = [];
+var sliderTimeStamp = "2018-09-04 09:00:00";
 //Seat colour variable that is set later after fetching relevant data
 let seatcolour = "";
 
 //Array of JS objects we place our desired chairs into
-const actualChairInfo =[];
+let actualChairInfo =[];
 
 //get WRLD api key
 
@@ -24,7 +27,7 @@ const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 	indoorsEnabled: true,
 })
 //Declare new feature group for all chair polygons
-const chairGroup = new L.featureGroup();
+let chairGroup = new L.featureGroup();
 
 //Add on clickevent for all layers in featureGroup
 chairGroup.on('click', function(e)
@@ -43,20 +46,12 @@ window.addEventListener('load', async () => {
   map.on('initialstreamingcomplete', async () => {
     //Run external script to connect to JSON server
 	console.log("initial stream complete");
-    const chairPolys = await getChairPolys();
+  chairPolys = await getChairPolys();
 	console.log("get chair polygons");
     //Returns all the Data from the JSON file
-	console.log(chairPolys);
-    chairPolys.forEach((chairPoly) => {
-		//console.log("looping through polygons");
-		//console.log(chairPoly);
-		
-        //Only return chair information for the timestamp we want, in this case 11AM on the first day
-        if(chairPoly.properties.timestamp === "2018-09-01 12:00:00"){
-			//console.log("pushing polys with right timestamp");
-          actualChairInfo.push(chairPoly);
-        } 
-    });
+
+	actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
+
     //Apply a popup containing a div with the chair's id to each polygon
 	/* function onEachFeature(feature, layer) {
 		console.log("Binding popups");
@@ -94,13 +89,15 @@ window.addEventListener('load', async () => {
 																																				{closeOnClick: false, 
 																																				autoClose:true, 
 																																				indoorMapId: 'westport_house', 
-																																				indoorMapFloorId: 0})
-																																				.addTo(map);
+																																				indoorMapFloorId: 0});
 	  //add created variable to featureGroup
       chairGroup.addLayer(polyChair);
       //add polygon to map
-      polyChair.addTo(map);
-    });
+		});
+		chairGroup.eachLayer(
+			function(layer){
+				map.addLayer(layer)}
+			)
   });
   const indoorControl = new WrldIndoorControl('widget-container', map);
   });
@@ -146,22 +143,37 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
 </div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
 	
+function convertSlider2Timestamp(sliderHour, sliderValue){
+		sliderTimeStamp  = get_Tstamp.calculate_Tstamp(sliderHour,sliderValue);
+		
+}
+	
+
+
 function sliderToHour() {	
 	//assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
 	var slide = document.getElementById('timeSlider').value;
 	console.log("Slider is at: " + slide);
 	var hour = Math.abs(slide % 24); //remainder is equivalent to relative simulated time
 	console.log("Relative time is: " + hour);
+	//passing hour value to be used to calculate which timestamp to use
+	convertSlider2Timestamp(hour,slide);
+	
 	if (hour >= 17 && hour < 23) {
-		//console.log("Restaurant open");
+		findTimeStamp(sliderTimeStamp, chairPolys);
+		resetPolyColors();
+		console.log("Restaurant open");
 		//hide element saying restaurant is closed, show element saying restaurant is open
 		document.getElementById('restaurantopen').style.display = 'block';
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
 		document.getElementById('restaurantclosed').style.display = 'none';
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
 		buildingPoly.getPopup().setContent();
+			//fetchTimestamp(sliderTimeStamp);
 	}else{
-		//console.log("Restaurant closed");
+		actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
+		resetPolyColors();
+		console.log("Restaurant closed");
 		//console.log(buildingPoly.getPopup().getContent());
 		//hide element saying restaurant is open, show element saying restaurant is closed
 		document.getElementById('restaurantopen').style.display = 'none';
@@ -170,8 +182,46 @@ function sliderToHour() {
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
 		buildingPoly.getPopup().setContent(); //this... shouldn't work. it should empty the popup's contents. and yet it works as a better updater than their own update() method.
 		//console.log(buildingPoly.getPopup().getContent());
+			//fetchTimestamp(sliderTimeStamp);
 	}
 }
+
+function resetPolyColors(){
+	chairGroup.eachLayer(
+		function(layer){
+		 map.removeLayer(layer)
+		chairGroup.removeLayer(layer)}
+		)
+	console.log("Destiny2");
+	console.log(chairGroup);
+	actualChairInfo.forEach((currentChair) => {
+		if(currentChair.properties.status === "occupied"){
+			seatcolour = "#fe022f";
+		}else if(currentChair.properties.status === "recentlyOccupied"){
+			seatcolour = "#f0e46e";
+		}else if(currentChair.properties.status === "notOccupied"){ 
+			seatcolour = "#00f272";
+		}
+	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
+	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div id=chair" + currentChair.properties.chairID 
+	 + ">Chair #" + currentChair.properties.chairID 
+	 + "<div id=" + currentChair.properties.chairID +"occupancy>" 
+	 + currentChair.properties.status 
+	 + "</div>" 
+	 + "</div>", 
+	 {closeOnClick: false, 
+	 autoClose:true, 
+	 indoorMapId: 'westport_house', 
+	 indoorMapFloorId: 0});
+//add created variable to featureGroup
+chairGroup.addLayer(polyChair);
+//add polygon to map
+	})	
+	chairGroup.eachLayer(
+		function(layer){
+			map.addLayer(layer)}
+		)
+} 
 
 function checkValue(event) {
 	console.log("Popup opened");
@@ -219,3 +269,27 @@ buildingPoly.on("click", clickBuilding);
 buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
 
+// function fetchTimestamp(str)
+// {
+// if (str==="closed")
+//   {
+//   return;
+//   }
+// if (window.XMLHttpRequest)
+//   {// code for IE7+, Firefox, Chrome, Opera, Safari
+//   xmlhttp=new XMLHttpRequest();
+//   }
+// else
+//   {// code for IE6, IE5
+//   xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+//   }
+// xmlhttp.onreadystatechange=function()
+//   {
+//   if (this.readyState==4 && this.status==200)
+//     {
+// 			sliderTimeStamp=this.responseText;
+//     }
+//   }
+// xmlhttp.open("GET","getcustomer.asp?q="+str,true);
+// xmlhttp.send();
+// }
