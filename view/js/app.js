@@ -67,6 +67,16 @@ function chairStatus(chair){
 	}
 }
 
+function lastOccupied(chair){
+	
+	
+}
+
+function occupantsToday(chair){
+	return chair.properties.UniqueOccupants;
+	
+}
+
 //Events for page onLoad
 window.addEventListener('load', async () => {
   console.log("onload");
@@ -122,9 +132,10 @@ window.addEventListener('load', async () => {
 																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
 																																				+ "</div>" 
 																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
-																																				+ "Last Occupied: " //+ lastOccupied(currentChair)																																				+ "</div>" 
+																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
+																																				+ "</div>" 
 																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
-																																				+ "Occupants Today: " //+ occupantsToday(currentChair)
+																																				+ "Occupants Today: " + occupantsToday(currentChair)
 																																				+ "</div>" 
 																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
 																																				+ "Occupancy graph here"
@@ -133,7 +144,7 @@ window.addEventListener('load', async () => {
 																																				+ "Status: " + chairStatus(currentChair) 
 																																				+ "</div>" 
 																																				+ "</div>", 
-																																				{closeOnClick: false, 
+																																				{closeOnClick: true, 
 																																				autoClose:true, 
 																																				indoorMapId: 'westport_house', 
 																																				indoorMapFloorId: 0})
@@ -195,23 +206,15 @@ function sliderToHour() {
 	var hour = Math.abs(slide % 24); //remainder is equivalent to relative simulated time
 	console.log("Relative time is: " + hour);
 	if (hour >= 17 && hour < 23) {
-		//console.log("Restaurant open");
 		//hide element saying restaurant is closed, show element saying restaurant is open
 		document.getElementById('restaurantopen').style.display = 'block';
-		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
 		document.getElementById('restaurantclosed').style.display = 'none';
-		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
 		buildingPoly.getPopup().setContent();
 	}else{
-		//console.log("Restaurant closed");
-		//console.log(buildingPoly.getPopup().getContent());
 		//hide element saying restaurant is open, show element saying restaurant is closed
 		document.getElementById('restaurantopen').style.display = 'none';
-		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
 		document.getElementById('restaurantclosed').style.display = 'block';
-		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
-		buildingPoly.getPopup().setContent(); //this... shouldn't work. it should empty the popup's contents. and yet it works as a better updater than their own update() method.
-		//console.log(buildingPoly.getPopup().getContent());
+		buildingPoly.getPopup().setContent(); 
 	}
 }
 
