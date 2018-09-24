@@ -11,9 +11,7 @@ var hour = 0;
 var dayAdjusted = 0;
 //Seat colour variable that is set later after fetching relevant data
 let seatcolour = "";
-
 var availableSeats = 0;
-
 //Array of JS objects we place our desired chairs into
 let actualChairInfo =[];
 
@@ -152,8 +150,13 @@ window.onload = function() {
 
 buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant</h2></div>\
 <div id='restaurantinfo'>\
-	<div id='restaurantinfo1'><p>Occupancy graph here</div>\
-	<div id='restaurantinfo2'><p>" + availableSeats + " seats available</p></div>\
+	<div id='restaurantinfo1'><p><svg height='100' width='500' >\
+						<rect  x='55' y='55' width= '198' height='10' stroke='black' stroke-width='4' fill='red'  />\
+						<rect id = 'bar' x='55' y='57' width= '0' height='6' stroke='black' stroke-width='0' fill='green' />\
+					</svg>\
+					</div>\
+					</div>\
+	<div id='restaurantinfo2'><p>Seats available here</p></div>\
 	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
 	<div id='westportinfo'><p><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
@@ -183,7 +186,7 @@ function sliderToHour() {
 	//passing hour value to be used to calculate which timestamp to use
 	convertSlider2Timestamp(hour,dayAdjusted);
 	
-	if (hour >= 9 && hour <= 17) {
+	if (hour >= 9 && hour < 18) {
 		actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
 		console.log(actualChairInfo);
 		resetPolyColors();
@@ -191,6 +194,8 @@ function sliderToHour() {
 		console.log("Restaurant open");
 		availableSeats = doughnutNC + doughnutNO;
 		//hide element saying restaurant is closed, show element saying restaurant
+		document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
+		document.getElementById("bar").setAttribute('width',  availableSeats*3);
 		document.getElementById('sidebarOpen').style.display = 'block';
 		document.getElementById('sidebarOCB').style.background= '#00A000'; 
 		document.getElementById('sidebarClosed').style.display = 'none';
@@ -198,7 +203,7 @@ function sliderToHour() {
 		
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
 		document.getElementById('restaurantclosed').style.display = 'none';
-		document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
+		
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
 		buildingPoly.getPopup().setContent();
 			//fetchTimestamp(sliderTimeStamp);
@@ -208,11 +213,13 @@ function sliderToHour() {
 		console.log("Restaurant closed");
 		//console.log(buildingPoly.getPopup().getContent());
 		//hide element saying restaurant is open, show element saying restaurant is closed
+		document.getElementById('restaurantinfo2').innerHTML = "No seats available";
+		document.getElementById("bar").setAttribute('width',  0);
 		document.getElementById('sidebarOpen').style.display = 'none';
 		document.getElementById('sidebarOCB').style.background = '#FF0000';
 		document.getElementById('sidebarClosed').style.display = 'block';
 		document.getElementById('restaurantopen').style.display = 'none';
-		document.getElementById('restaurantinfo2').innerHTML = "No seats available";
+		
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
 		document.getElementById('restaurantclosed').style.display = 'block';
 
@@ -236,6 +243,7 @@ function updateChart(myDoughnutChart, chairDoughnutData)
 var doughnutO = 0;
 var doughnutNO = 0;
 var doughnutNC = 0;
+
 
 function createDoughnutDataArray(){
 	chairDoughnutData[0] = doughnutO;
@@ -286,7 +294,7 @@ function resetPolyClosed(){
 chairGroup.addLayer(polyChair);
 console.log(chairGroup);
 //add polygon to map
-	})
+	})	
 	chairGroup.eachLayer(
 		function(layer){
 			map.addLayer(layer)}
@@ -442,8 +450,8 @@ $.fn.redraw = function(){
 };
 map.indoors.on("indoormapenter", onEnter);
 map.indoors.on("indoormapexit", onExit);
-//buildingPoly.on("mouseover", mouseOverBuilding);
-//buildingPoly.on("mouseout", mouseOutBuilding);
+buildingPoly.on("mouseover", mouseOverBuilding);
+buildingPoly.on("mouseout", mouseOutBuilding);
 buildingPoly.on("click", clickBuilding);
 buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
