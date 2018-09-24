@@ -9,7 +9,6 @@ var half_hour;
     	//half hour gaps
     	// 
     	
-    	if (sliderHour >= 9 && sliderHour <= 18){
 
     		//check if sliderHour is a decimal 
     		if (Number.isInteger(sliderHour)) {
@@ -84,11 +83,7 @@ var half_hour;
     		 }
 
 
-    	}
-    	else
-    	{
-    		return "closed";
-    	}
+    	
 
     	
     	return timeStamp;

@@ -15,6 +15,10 @@ var availableSeats = 0;
 //Array of JS objects we place our desired chairs into
 let actualChairInfo =[];
 
+var playClicked = false;
+
+var sliderIncrement = 0;
+
 var chairDoughnutData = [];
 
 //get WRLD api key
@@ -58,7 +62,7 @@ window.addEventListener('load', async () => {
 
 	actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
 	
-
+	
     //Apply a popup containing a div with the chair's id to each polygon
 	/* function onEachFeature(feature, layer) {
 		console.log("Binding popups");
@@ -120,17 +124,13 @@ window.addEventListener('load', async () => {
 			)
 			resetPolyColors();
   });
+  setTimeout(time(), 2000);
   const indoorControl = new WrldIndoorControl('widget-container', map);
   });
 
 
 window.onload = function() {
 	console.log("Building popup is open?: " + buildingPoly.isPopupOpen());
-	setInterval(function() {
-		if(document.getElementById('timeSlider').value != 0){
-			document.getElementById('timeSlider').value += 0.25;
-		}
-	},900000);
 }
 //
   var buildingLatLong = [
@@ -161,14 +161,15 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
 	<div id='westportinfo'><p><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
 	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
-</div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
+</div>", {className: 'infopopupexterior', closeOnClick: true, autoClose: false, offset:[0,-50]}).openPopup();
 	
 function convertSlider2Timestamp(sliderHour, sliderValue){
 		sliderTimeStamp  = get_Tstamp.calculate_Tstamp(sliderHour,sliderValue);
-		
+	time();	
 }
 
 function sliderToHour() {	
+	
 	//assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
 	var slide = document.getElementById('timeSlider').value;
 	hour = 24 - Math.abs(slide % 24); //remainder is equivalent to relative simulated time
@@ -505,6 +506,26 @@ var myDoughnutChart = new Chart(ctx, {
 		]
 	}
 });
+//increment slider when play button is clicked
+function incrementSlider(){
+	console.log("Beginning increment function");
+	sliderIncrement = setInterval(function(){
+		console.log("Incrementing slider by 0.5");
+		var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
+		console.log("New value: " + newSlide);
+		$('#timeSlider').val(newSlide);
+		console.log($('#timeSlider').val());
+		$('#timeSlider').trigger('change');
+	}, 5000);
+}
+
+
+
+function stopIncrement(){
+	console.log("Stopping increment");
+	clearInterval(sliderIncrement);
+}
+
 //from slider.js
 /* When the user clicks on the button, 
 toggle between hiding and showing the dropdown content */
@@ -559,3 +580,38 @@ $("#link4Clicked").click(function () {
     daySelected = 3;
     $("#currentDay").html("04/09/2018");
 });
+
+$(".rewindButton").click(function(){
+	var newSlide = -Math.abs($('#timeSlider').val()) - 0.5;
+	$('#timeSlider').val(newSlide);
+	$('#timeSlider').trigger('change');
+});
+
+$(".forwardButton").click(function(){
+	var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
+	$('#timeSlider').val(newSlide);
+	$('#timeSlider').trigger('change');
+});
+
+$(".playButton").click(function() {
+	if(playClicked === false){
+		incrementSlider();
+		playClicked = true;
+		document.getElementById("playPause").classList.remove("fa-play");
+		document.getElementById("playPause").classList.add("fa-pause");
+	}else{
+		stopIncrement();
+		playClicked = false;
+		document.getElementById("playPause").classList.add("fa-play");
+		document.getElementById("playPause").classList.remove("fa-pause");
+	}
+});
+
+function time(){
+    var dateAndTime = sliderTimeStamp;
+    var timeFromTimeStamp;
+    timeFromTimeStamp = dateAndTime.substr(11);
+	timeFromTimeStamp = timeFromTimeStamp.slice(0, -3);
+    console.log("TIME IS:" + timeFromTimeStamp);
+	$("#clock").html(timeFromTimeStamp);
+}
