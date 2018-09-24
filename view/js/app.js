@@ -8,6 +8,7 @@ const { findTimeStamp } = require('./process-search');
 let chairPolys = [];
 var sliderTimeStamp = "2018-09-04 09:00:00";
 var hour = 0;
+var dayAdjusted = 0;
 //Seat colour variable that is set later after fetching relevant data
 let seatcolour = "";
 
@@ -165,19 +166,20 @@ function convertSlider2Timestamp(sliderHour, sliderValue){
 function sliderToHour() {	
 	//assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
 	var slide = document.getElementById('timeSlider').value;
+	hour = 24 - Math.abs(slide % 24); //remainder is equivalent to relative simulated time
 	console.log("Slider is at: " + slide);
 	if(daySelected === 0){
-		hour = 96 - Math.abs(slide % 24); //remainder is equivalent to relative simulated time
+		dayAdjusted = -Math.abs(hour + 72);
 	} else if (daySelected === 1){
-		hour = 72 - Math.abs(slide % 24);
+		dayAdjusted = -Math.abs(hour + 48);
 	} else if (daySelected === 2){
-		hour = 48 - Math.abs(slide % 24);
+		dayAdjusted = -Math.abs(hour + 24);
 	} else if (daySelected === 3){
-		hour = 24 - Math.abs(slide % 24);
+		dayAdjusted = -Math.abs(hour);
 	}
 	console.log("Relative time is: " + hour);
 	//passing hour value to be used to calculate which timestamp to use
-	convertSlider2Timestamp(hour,slide);
+	convertSlider2Timestamp(hour,dayAdjusted);
 	
 	if (hour >= 9 && hour < 18) {
 		actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
