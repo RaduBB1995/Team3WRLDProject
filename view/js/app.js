@@ -510,12 +510,38 @@ var myDoughnutChart = new Chart(ctx, {
 function incrementSlider(){
 	console.log("Beginning increment function");
 	sliderIncrement = setInterval(function(){
-		console.log("Incrementing slider by 0.5");
-		var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
-		console.log("New value: " + newSlide);
-		$('#timeSlider').val(newSlide);
-		console.log($('#timeSlider').val());
-		$('#timeSlider').trigger('change');
+			if($('#timeSlider').val() != 0){
+			console.log("Incrementing slider by 0.5");
+			var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
+			console.log("New value: " + newSlide);
+			$('#timeSlider').val(newSlide);
+			console.log($('#timeSlider').val());
+			$('#timeSlider').trigger('change');
+		}else{
+			console.log("End of slider reached, going to next day...");
+			if(daySelected === 0){
+				console.log("On day 1, going to day 2..");
+				$("#link2Clicked").trigger('click');
+				$('#timeSlider').val(-Math.abs(24));
+				$('#timeSlider').trigger('change');
+			}
+			if(daySelected === 1){
+				console.log("On day 2, going to day 3..");
+				$("#link3Clicked").trigger('click');
+				$('#timeSlider').val(-Math.abs(24));
+				$('#timeSlider').trigger('change');
+			}
+			if(daySelected === 2){
+				console.log("On day 3, going to day 4..");
+				$("#link4Clicked").trigger('click');
+				$('#timeSlider').val(-Math.abs(24));
+				$('#timeSlider').trigger('change');
+			}
+			if(daySelected === 3){
+				console.log("On day 4, ending increment");
+				$(".playButton").trigger('click');
+			}
+		}
 	}, 5000);
 }
 
@@ -562,6 +588,7 @@ window.onclick = function(event) {
 var daySelected = 2;
 
 $("#link1Clicked").click(function () {
+	
     daySelected = 0;
     $("#currentDay").html("01/09/2018");
 });
@@ -582,15 +609,19 @@ $("#link4Clicked").click(function () {
 });
 
 $(".rewindButton").click(function(){
-	var newSlide = -Math.abs($('#timeSlider').val()) - 0.5;
-	$('#timeSlider').val(newSlide);
-	$('#timeSlider').trigger('change');
+	if($('#timeSlider').val() != -24){
+		var newSlide = -Math.abs($('#timeSlider').val()) - 0.5;
+		$('#timeSlider').val(newSlide);
+		$('#timeSlider').trigger('change');
+	}
 });
 
 $(".forwardButton").click(function(){
-	var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
-	$('#timeSlider').val(newSlide);
-	$('#timeSlider').trigger('change');
+	if($('#timeSlider').val() != 0){
+		var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
+		$('#timeSlider').val(newSlide);
+		$('#timeSlider').trigger('change');
+	}
 });
 
 $(".playButton").click(function() {
