@@ -1,7 +1,7 @@
 const Wrld = require('wrld.js');
 const env = require('./env');
 const sideview = require('./sideview');
-const sliderFile = require('./slider');
+//const sliderFile = require('./slider');
 const { getChairPolys } = require('./api-service');
 const get_Tstamp = require('./get_timestamp');
 const { findTimeStamp } = require('./process-search');
@@ -86,16 +86,29 @@ window.addEventListener('load', async () => {
         seatcolour = "#00f272"
       }
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div id=chair" + currentChair.properties.chairID 
-																																				+ ">Chair #" + currentChair.properties.chairID 
-																																				+ "<div id=" + currentChair.properties.chairID +"occupancy>" 
-																																				+ currentChair.properties.status 
+      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
+																																				//+ Chair #" + currentChair.properties.chairID 
+																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
+																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
+																																				+ "</div>" 
+																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
+																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
+																																				+ "</div>" 
+																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
+																																				+ "Occupants Today: " + occupantsToday(currentChair)
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
+																																				+ "Occupancy graph here"
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
+																																				+ "Status: " + chairStatus(currentChair) 
 																																				+ "</div>" 
 																																				+ "</div>", 
-																																				{closeOnClick: false, 
+																																				{closeOnClick: true, 
 																																				autoClose:true, 
 																																				indoorMapId: 'westport_house', 
-																																				indoorMapFloorId: 0});
+																																				indoorMapFloorId: 0})
+																																				.addTo(map);
 	  //add created variable to featureGroup
       chairGroup.addLayer(polyChair);
       //add polygon to map
@@ -267,6 +280,46 @@ console.log(chairGroup);
 		updateChart(myDoughnutChart, chairDoughnutData);
 } 
 
+function getColour(chair){
+	if(chair.properties.status === "occupied"){
+		return "#fe022f";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "#f0e46e";
+	}else if(chair.properties.status === "notOccupied"){
+		return "#00f272";
+	}
+}
+
+function titleStatus(chair){
+	if(chair.properties.status === "occupied"){
+		return "Seat Unavailable";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "Waiting to be Cleared";
+	}else if(chair.properties.status === "notOccupied"){
+		return "Seat Available";
+	}
+}
+
+function chairStatus(chair){
+	if(chair.properties.status === "occupied"){
+		return "Taken";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "Being Cleared";
+	}else if(chair.properties.status === "notOccupied"){
+		return "Free";
+	}
+}
+
+function lastOccupied(chair){
+	
+	
+}
+
+function occupantsToday(chair){
+	return chair.properties.UniqueOccupants;
+	
+}
+
 function resetPolyColors(){
 	doughnutO = 0;
 	doughnutNO = 0;
@@ -289,16 +342,28 @@ function resetPolyColors(){
 			doughnutNC += 1;
 		}
 	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div id=chair" + currentChair.properties.chairID 
-	 + ">Chair #" + currentChair.properties.chairID 
-	 + "<div id=" + currentChair.properties.chairID +"occupancy>" 
-	 + currentChair.properties.status 
-	 + "</div>" 
-	 + "</div>", 
-	 {closeOnClick: false, 
-	 autoClose:true, 
-	 indoorMapId: 'westport_house', 
-	 indoorMapFloorId: 0});
+	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
+																																				//+ Chair #" + currentChair.properties.chairID 
+																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
+																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
+																																				+ "</div>" 
+																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
+																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
+																																				+ "</div>" 
+																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
+																																				+ "Occupants Today: " + occupantsToday(currentChair)
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
+																																				+ "Occupancy graph here"
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
+																																				+ "Status: " + chairStatus(currentChair) 
+																																				+ "</div>" 
+																																				+ "</div>", 
+																																				{closeOnClick: true, 
+																																				autoClose:true, 
+																																				indoorMapId: 'westport_house', 
+																																				indoorMapFloorId: 0})
 //add created variable to featureGroup
 chairGroup.addLayer(polyChair);
 //add polygon to map
