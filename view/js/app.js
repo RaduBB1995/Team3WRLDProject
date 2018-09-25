@@ -280,7 +280,7 @@ function chairStatus(chair){
 }
 
 function lastOccupied(chair){
-  return chair.properties.lastOccupiedTime;
+  return chair.properties.lastOccupiedTime.substring(10,16);
 
 }
 
