@@ -127,7 +127,7 @@ window.addEventListener('load', async () => {
       //Needed for Chart.js on load
 			resetPolyColors();
   });
-  setTimeout(time(), 2000);
+  time();
   const indoorControl = new WrldIndoorControl('widget-container', map);
   });
 
@@ -164,7 +164,7 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
 	<div id='westportinfo'><p><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
 	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
-</div>", {className: 'infopopupexterior', closeOnClick: true, autoClose: false, offset:[0,-50]}).openPopup();
+</div>", {className: 'infopopupexterior', closeOnClick: true, autoClose: false, offset:[0,-50], closeButton: false}).openPopup();
 
 function convertSlider2Timestamp(sliderHour, sliderValue){
 		sliderTimeStamp  = get_Tstamp.calculate_Tstamp(sliderHour,sliderValue);
@@ -193,18 +193,29 @@ function sliderToHour() {
 
 		resetPolyColors();
 
-		console.log("Restaurant open");
+		
 		availableSeats = doughnutNC + doughnutNO;
 		//hide element saying restaurant is closed, show element saying restaurant
 
-		document.getElementById("bar").setAttribute('width',  availableSeats*3);
-		document.getElementById('sidebarOpen').style.display = 'block';
-		document.getElementById('sidebarOCB').style.background= '#00A000';
-		document.getElementById('sidebarClosed').style.display = 'none';
-		document.getElementById('restaurantopen').style.display = 'block';
+		
+		if(hour >= 9 && hour <=18){		
+			console.log("Restaurant open");		
+			document.getElementById('sidebarOpen').style.display = 'block';
+			document.getElementById('sidebarOCB').style.background= '#00A000';
+			document.getElementById('sidebarClosed').style.display = 'none';
+			document.getElementById('restaurantopen').style.display = 'block';
+			document.getElementById('restaurantclosed').style.display = 'none';
+		}else{
+			console.log("Restaurant closed");
+			document.getElementById('sidebarOpen').style.display = 'none';
+			document.getElementById('sidebarOCB').style.background= '#fe022f';
+			document.getElementById('sidebarClosed').style.display = 'block';
+			document.getElementById('restaurantopen').style.display = 'none';
+			document.getElementById('restaurantclosed').style.display = 'block';
+		}
 
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
-		document.getElementById('restaurantclosed').style.display = 'none';
+		document.getElementById("bar").setAttribute('width',  availableSeats*3);
 	   document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
 		buildingPoly.getPopup().setContent();
@@ -240,7 +251,7 @@ function getColour(chair){
 	}else if(chair.properties.status === "notOccupied"){
 		return "#00f272";
 	}else if(chair.properties.status === "closed"){
-		return "#ffffff";
+		return "#000000";
 	}
 }
 
@@ -252,7 +263,7 @@ function titleStatus(chair){
 	}else if(chair.properties.status === "notOccupied"){
 		return "Seat Available";
 	}else if(chair.properties.status === "closed"){
-		return "#ffffff";
+		return "Closed";
 	}
 }
 
