@@ -13,12 +13,12 @@ var dayAdjusted = 0;
 let seatcolour = "";
 var availableSeats = 0;
 //Array of JS objects we place our desired chairs into
-let actualChairInfo =[];
+var actualChairInfo =[];
 
 var playClicked = false;
 
 var sliderIncrement = 0;
-
+var testArray = [];
 var chairDoughnutData = [];
 
 //get WRLD api key
@@ -33,7 +33,7 @@ const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 	center: [56.459900, -2.977970],
 	maxZoom: 30,
 	zoom: 18,
-	
+
 	indoorsEnabled: true,
 })
 //Declare new feature group for all chair polygons
@@ -61,15 +61,15 @@ window.addEventListener('load', async () => {
     //Returns all the Data from the JSON file
 
 	actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
-	
-	
+
+
     //Apply a popup containing a div with the chair's id to each polygon
 	/* function onEachFeature(feature, layer) {
 		console.log("Binding popups");
 		layer.bindPopup("<div id=" + feature.properties.chairID + ">Chair #" + feature.properties.chairID + "</div>");
 	} */
 	//console.log(actualChairInfo);
-	//Go through each chair that we wanted, apply colours depending on the state of the seat	
+	//Go through each chair that we wanted, apply colours depending on the state of the seat
 	/* L.geoJSON(actualChairInfo, {
 		//onEachFeature: onEachFeature,
 		style: function(feature) {
@@ -88,30 +88,32 @@ window.addEventListener('load', async () => {
       }else if(currentChair.properties.status === "recentlyOccupied"){
         seatcolour = "#f0e46e";
       }else if(currentChair.properties.status === "notOccupied"){
-        seatcolour = "#00f272"
-      }
+        seatcolour = "#00f272";
+      }else if(currentChair.properties.status === "closed"){
+    		seatcolour = "#ffffff";
+    	}
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
       var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
-																																				//+ Chair #" + currentChair.properties.chairID 
-																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
+																																				//+ Chair #" + currentChair.properties.chairID
+																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>"
 																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
-																																				+ "</div>" 
-																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
-																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
-																																				+ "</div>" 
-																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
+																																				+ "</div>"
+																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>"
+																																				+ "Last Occupied: " + lastOccupied(currentChair)
+																																				+ "</div>"
+																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>"
 																																				+ "Occupants Today: " + occupantsToday(currentChair)
-																																				+ "</div>" 
-																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
+																																				+ "</div>"
+																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>"
 																																				+ "Occupancy graph here"
-																																				+ "</div>" 
-																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
-																																				+ "Status: " + chairStatus(currentChair) 
-																																				+ "</div>" 
-																																				+ "</div>", 
-																																				{closeOnClick: true, 
-																																				autoClose:true, 
-																																				indoorMapId: 'westport_house', 
+																																				+ "</div>"
+																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>"
+																																				+ "Status: " + chairStatus(currentChair)
+																																				+ "</div>"
+																																				+ "</div>",
+																																				{closeOnClick: true,
+																																				autoClose:true,
+																																				indoorMapId: 'westport_house',
 																																				indoorMapFloorId: 0})
 																																				.addTo(map);
 	  //add created variable to featureGroup
@@ -122,6 +124,7 @@ window.addEventListener('load', async () => {
 			function(layer){
 				map.addLayer(layer)}
 			)
+      //Needed for Chart.js on load
 			resetPolyColors();
   });
   setTimeout(time(), 2000);
@@ -162,14 +165,13 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant<
 	<div id='westportinfo'><p><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
 	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
 </div>", {className: 'infopopupexterior', closeOnClick: true, autoClose: false, offset:[0,-50]}).openPopup();
-	
+
 function convertSlider2Timestamp(sliderHour, sliderValue){
 		sliderTimeStamp  = get_Tstamp.calculate_Tstamp(sliderHour,sliderValue);
-	time();	
+	time();
 }
 
-function sliderToHour() {	
-	
+function sliderToHour() {
 	//assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
 	var slide = document.getElementById('timeSlider').value;
 	hour = 24 - Math.abs(slide % 24); //remainder is equivalent to relative simulated time
@@ -186,50 +188,28 @@ function sliderToHour() {
 	console.log("Relative time is: " + hour);
 	//passing hour value to be used to calculate which timestamp to use
 	convertSlider2Timestamp(hour,dayAdjusted);
-	
-	if (hour >= 9 && hour < 18) {
+
 		actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
-		console.log(actualChairInfo);
+
 		resetPolyColors();
-		console.log(actualChairInfo);
+
 		console.log("Restaurant open");
 		availableSeats = doughnutNC + doughnutNO;
 		//hide element saying restaurant is closed, show element saying restaurant
-		document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
+
 		document.getElementById("bar").setAttribute('width',  availableSeats*3);
 		document.getElementById('sidebarOpen').style.display = 'block';
-		document.getElementById('sidebarOCB').style.background= '#00A000'; 
+		document.getElementById('sidebarOCB').style.background= '#00A000';
 		document.getElementById('sidebarClosed').style.display = 'none';
 		document.getElementById('restaurantopen').style.display = 'block';
-		
+
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
 		document.getElementById('restaurantclosed').style.display = 'none';
-		
+	   document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
 		buildingPoly.getPopup().setContent();
 			//fetchTimestamp(sliderTimeStamp);
-	}else{
-		
-		resetPolyClosed();
-		console.log("Restaurant closed");
-		//console.log(buildingPoly.getPopup().getContent());
-		//hide element saying restaurant is open, show element saying restaurant is closed
-		document.getElementById('restaurantinfo2').innerHTML = "No seats available";
-		document.getElementById("bar").setAttribute('width',  0);
-		document.getElementById('sidebarOpen').style.display = 'none';
-		document.getElementById('sidebarOCB').style.background = '#FF0000';
-		document.getElementById('sidebarClosed').style.display = 'block';
-		document.getElementById('restaurantopen').style.display = 'none';
-		
-		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
-		document.getElementById('restaurantclosed').style.display = 'block';
 
-		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
-		buildingPoly.getPopup().setContent(); //this... shouldn't work. it should empty the popup's contents. and yet it works as a better updater than their own update() method.
-		//console.log(buildingPoly.getPopup().getContent());
-			//fetchTimestamp(sliderTimeStamp);
-
-	}
 }
 
 function updateChart(myDoughnutChart, chairDoughnutData)
@@ -252,60 +232,6 @@ function createDoughnutDataArray(){
 	chairDoughnutData[2] = doughnutNC;
 }
 
-function resetPolyClosed(){
-
-	doughnutO = 0;
-	doughnutNO = 0;
-	doughnutNC = 0;
-	chairGroup.eachLayer(
-		function(layer){
-		 map.removeLayer(layer)
-		chairGroup.removeLayer(layer)}
-		)
-	console.log(actualChairInfo);
-	actualChairInfo.forEach((currentChair) => {
-		currentChair.properties.status = "occupied";
-			seatcolour = "#fe022f";
-			doughnutO += 1;
-		
-	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
-																																				//+ Chair #" + currentChair.properties.chairID 
-																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
-																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
-																																				+ "</div>" 
-																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
-																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
-																																				+ "</div>" 
-																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
-																																				+ "Occupants Today: " + occupantsToday(currentChair)
-																																				+ "</div>" 
-																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
-																																				+ "Occupancy graph here"
-																																				+ "</div>" 
-																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
-																																				+ "Status: " + chairStatus(currentChair) 
-																																				+ "</div>" 
-																																				+ "</div>", 
-																																				{closeOnClick: true, 
-																																				autoClose:true, 
-																																				indoorMapId: 'westport_house', 
-																																				indoorMapFloorId: 0});
-//add created variable to featureGroup
-chairGroup.addLayer(polyChair);
-console.log(chairGroup);
-//add polygon to map
-	})	
-	chairGroup.eachLayer(
-		function(layer){
-			map.addLayer(layer)}
-		)
-
-
-		createDoughnutDataArray();
-		updateChart(myDoughnutChart, chairDoughnutData);
-} 
-
 function getColour(chair){
 	if(chair.properties.status === "occupied"){
 		return "#fe022f";
@@ -313,6 +239,8 @@ function getColour(chair){
 		return "#f0e46e";
 	}else if(chair.properties.status === "notOccupied"){
 		return "#00f272";
+	}else if(chair.properties.status === "closed"){
+		return "#ffffff";
 	}
 }
 
@@ -323,6 +251,8 @@ function titleStatus(chair){
 		return "Waiting to be Cleared";
 	}else if(chair.properties.status === "notOccupied"){
 		return "Seat Available";
+	}else if(chair.properties.status === "closed"){
+		return "#ffffff";
 	}
 }
 
@@ -333,20 +263,23 @@ function chairStatus(chair){
 		return "Being Cleared";
 	}else if(chair.properties.status === "notOccupied"){
 		return "Free";
+	}else if(chair.properties.status === "closed"){
+		return "Closed";
 	}
 }
 
 function lastOccupied(chair){
-	
-	
+  return chair.properties.lastOccupiedTime;
+
 }
 
 function occupantsToday(chair){
 	return chair.properties.UniqueOccupants;
-	
+
 }
 
 function resetPolyColors(){
+  console.log(2);
 	doughnutO = 0;
 	doughnutNO = 0;
 	doughnutNC = 0;
@@ -355,7 +288,6 @@ function resetPolyColors(){
 		 map.removeLayer(layer)
 		chairGroup.removeLayer(layer)}
 		)
-	console.log(chairGroup);
 	actualChairInfo.forEach((currentChair) => {
 		if(currentChair.properties.status === "occupied"){
 			seatcolour = "#fe022f";
@@ -363,37 +295,41 @@ function resetPolyColors(){
 		}else if(currentChair.properties.status === "recentlyOccupied"){
 			seatcolour = "#f0e46e";
 			doughnutNO += 1;
-		}else if(currentChair.properties.status === "notOccupied"){ 
+		}else if(currentChair.properties.status === "notOccupied"){
 			seatcolour = "#00f272";
 			doughnutNC += 1;
-		}
+		}else if(currentChair.properties.status === "closed"){
+  		seatcolour = "#ffffff";
+      doughnutO +=1;
+      console.log("Test");
+  	}
 	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
 	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
-																																				//+ Chair #" + currentChair.properties.chairID 
-																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
+																																				//+ Chair #" + currentChair.properties.chairID
+																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>"
 																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
-																																				+ "</div>" 
-																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
-																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
-																																				+ "</div>" 
-																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
+																																				+ "</div>"
+																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>"
+																																				+ "Last Occupied: " + lastOccupied(currentChair)
+																																				+ "</div>"
+																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>"
 																																				+ "Occupants Today: " + occupantsToday(currentChair)
-																																				+ "</div>" 
-																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
+																																				+ "</div>"
+																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>"
 																																				+ "Occupancy graph here"
-																																				+ "</div>" 
-																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
-																																				+ "Status: " + chairStatus(currentChair) 
-																																				+ "</div>" 
-																																				+ "</div>", 
-																																				{closeOnClick: true, 
-																																				autoClose:true, 
-																																				indoorMapId: 'westport_house', 
+																																				+ "</div>"
+																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>"
+																																				+ "Status: " + chairStatus(currentChair)
+																																				+ "</div>"
+																																				+ "</div>",
+																																				{closeOnClick: true,
+																																				autoClose:true,
+																																				indoorMapId: 'westport_house',
 																																				indoorMapFloorId: 0})
 //add created variable to featureGroup
 chairGroup.addLayer(polyChair);
 //add polygon to map
-	})	
+	})
 	chairGroup.eachLayer(
 		function(layer){
 			map.addLayer(layer)}
@@ -402,25 +338,25 @@ chairGroup.addLayer(polyChair);
 
 		createDoughnutDataArray();
 		updateChart(myDoughnutChart, chairDoughnutData);
-} 
+}
 
 function checkValue(event) {
 	console.log("Popup opened");
 	sliderToHour();
 }
-	
+
 function clickBuilding(event) {
 	this.getPopup().setLatLng(this.getCenter());
-}	
+}
 
 function mouseOverBuilding(event) {
 	this.setStyle({color: '#bff5ff'});
-}	
-	
+}
+
 function mouseOutBuilding(event) {
 	this.setStyle({color: '#7aebff'});
-}	
-	
+}
+
 function onEnter(event) {
     console.log("Entered indoor map: " + event.indoorMap.getIndoorMapName());
 	//document.getElementById("hidingslider").style.display = "block";
@@ -493,16 +429,16 @@ var myDoughnutChart = new Chart(ctx, {
 				'#ff0a1e',
 				'#f3e658',
 				'#1df460'
-				
+
 			]
 		}],
-	
+
 		// These labels appear in the legend and in the tooltips when hovering different arcs
 		labels: [
 			'Unavailable',
 			'To Be Cleared',
 			'Available'
-			
+
 		]
 	}
 });
@@ -553,7 +489,7 @@ function stopIncrement(){
 }
 
 //from slider.js
-/* When the user clicks on the button, 
+/* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
 $("#sliderDropdownButton").click(function () {
     document.getElementById("myDropdown").classList.add("show");
@@ -561,7 +497,7 @@ $("#sliderDropdownButton").click(function () {
         $(".dropbtn").css('border-top-right-radius', '0');
 
     document.getElementById("usa").classList.add("fa-angle-down");
-    document.getElementById("usa").classList.remove("fa-angle-up");    
+    document.getElementById("usa").classList.remove("fa-angle-up");
 });
 
 
@@ -576,7 +512,7 @@ window.onclick = function(event) {
             $(".dropbtn").css('border-top-left-radius', '12px');
             $(".dropbtn").css('border-top-right-radius', '12px');
             document.getElementById("usa").classList.remove("fa-angle-down");
-            document.getElementById("usa").classList.add("fa-angle-up");    
+            document.getElementById("usa").classList.add("fa-angle-up");
         }
         }
     } else {
@@ -588,7 +524,7 @@ window.onclick = function(event) {
 var daySelected = 2;
 
 $("#link1Clicked").click(function () {
-	
+
     daySelected = 0;
     $("#currentDay").html("01/09/2018");
 });

@@ -1,18 +1,19 @@
 var exports = module.exports = {};
 var chairObjectsPerTimestamp;
-var actualChairInfo = [];
+var searchInfo = [];
 
 exports.findTimeStamp = function(timestamp, chairPolys){
-    actualChairInfo = [];
+  console.log(1)
+    searchInfo = [];
     chairPolys.forEach((chairPoly) => {
 		//console.log("looping through polygons");
 		//console.log(chairPoly);
         //Only return chair information for the timestamp we want, in this case 11AM on the first day
         if(chairPoly.properties.timestamp === timestamp){
 			//console.log("pushing polys with right timestamp");
-          actualChairInfo.push(chairPoly);
-        } 
+          searchInfo.push(chairPoly);
+        }
     });
-
-    return actualChairInfo;
+    console.log(searchInfo);
+    return searchInfo;
 }
