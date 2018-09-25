@@ -1,6 +1,7 @@
 @import url("https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.1/leaflet.css");
 @import url("https://cdn-webgl.wrld3d.com/wrldjs/addons/resources/latest/css/wrld.css");
 
+
 html,body {
 		margin: 0;
 		padding: 0;
@@ -47,32 +48,178 @@ html,body {
 }
 
 
+.chairdiv{
+	width:250px;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.chairtitle {
+	color: #FFFFFF;
+	font-size: 8pt
+}
+
+
+
 .infopopup .leaflet-popup-tip,
 .infopopup .leaflet-popup-content-wrapper {
 	background: #FFFFFF;
-	color: #000000
+	color: #000000;
+}
+
+.leaflet-popup-content{
+	color: black;
+}
+
+.leaflet-popup-content-wrapper {
+	
+	width: 100% !important;
+	line-height: 0;
+	text-align: center;
+	margin-top: -5px;
+	padding-left: 0;
+	padding-right: 0;
+	
+	.leaflet-popup-content {
+		color: black !important;
+		margin: 0 !important;
+		margin-top: -17px !important;
+		display: block !important;
+		width: 100%;
+		left: 0 !important;
+		top: 0 !important;
+		border-bottom-left-radius: 12px;
+		border-bottom-right-radius: 12px;
+		border-top-left-radius: 12px;
+		border-top-right-radius: 12px;
+		border-radius: 25px !important;
+		padding-left:0 !important;
+		.chairtitle {
+			border-top-left-radius: 12px;
+			border-top-right-radius: 12px;
+			margin-top:16px;
+			margin-right:-1px
+		}
+		.chairlastoccupied  {
+			background: #FFFFFF;
+			color: #000000;
+			display: inline-block;
+			font-size: 9pt ;
+			float: left;
+			margin-top: -10px;
+			margin-bottom: 50px;
+			margin-left: 5px
+		}
+		
+		.chairdailyoccupants {
+			background: #FFFFFF;
+			color: #000000;
+			display: inline-block;
+			float: right;
+			font-size: 9pt ;
+			margin-top: -10px;
+			margin-bottom: 50px;
+			margin-right: 5px
+		}
+
+		.chairoccupancygraph{
+			background: #FFFFFF;
+			color: #000000;
+			font-size: 9pt ;
+			clear:both;
+		}
+
+		.chairoccupancy {
+			background: #FFFFFF;
+			color: #000000;
+			font-size: 9pt ;
+			border-bottom-left-radius: 12px;
+			border-bottom-right-radius: 12px;
+			margin-bottom:5px
+		}
+		
+	}
+	
+}
+
+.leaflet-popup-close-button {
+	
 }
 
 .infopopupexterior .leaflet-popup-tip,
 .infopopupexterior .leaflet-popup-content-wrapper {
 	background: #FFFFFF;
-	color: #000000
+	color: #000000;
 }
+
 
 
 #timeSlider {
-	 width:100%; 
-	 height: 100%
+	 //width:100%; 
+	 //height: 100%
 }
 	
 .slidecontainer {
-	width:99vw; 
-	height: 30px; 
+	width: 100%; 
+	//height: 30px; 
 	display: block;
 	position:absolute;
 	bottom:25px;
 	left:5px;
-	z-index:30
+	
+	z-index:30;
+
+	.sliderWrapper {
+		width: 65%;
+		text-align: center;
+		margin: auto;
+		background: grey;
+		background-color: rgba(128,128,128, 0.7);
+		border-radius: 25px;
+		padding-top: 10px;
+		padding-right: 40px;
+		padding-left: 40px;
+
+		.mediaButtonsContainer {
+			display: inline-flex;
+		
+			.rewindContainer {
+		
+				.rewindButton {
+					border-radius: 15px;
+					background: #0D67AC;
+					color: #ffffff;
+					width: 60px;
+					height: 30px;
+					border: none;
+				}
+			}
+		
+			.playContainer {
+				
+				.playButton {
+					border-radius: 15px;
+					background: #0D67AC;
+					color: #ffffff;
+					width: 60px;
+					height: 30px;
+					border: none;
+				}
+			}
+		
+			.forwardContainer {
+				
+				.forwardButton {
+					border-radius: 15px;
+					background: #0D67AC;
+					color: #ffffff;
+					width: 60px;
+					height: 30px;
+					border: none;
+				}
+			}
+		}
+	}
 }
 
 #sliderValue {
@@ -92,4 +239,320 @@ html,body {
         background-color: #000000;
         z-index:0
     }
+}
+
+.sideViewToggleContainer {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	
+	z-index: 30;
+
+	.slideViewToggle {
+		border-radius: 25px;
+		background: #006CBF;
+		color: #ffffff;
+		height: 55px;
+		display:none;
+	}
+}
+
+.sideViewContainer {
+	//display: none;
+	position: absolute;
+	right: 0;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+
+	.sideView {
+		position: absolute;
+		width: 305px;
+		height: 395px;
+		right: -305px;
+		top: 10px;
+		background: #ffffff;
+		border-radius: 25px;
+		box-shadow: 5px 10px 18px #555555;
+		z-index: 30;
+
+		.titleContainer {
+			display: table;
+			width: 100%;
+		
+			.Title {
+				margin-top: -10px;
+				background: #006CBF;
+				width: 100%;
+				height: 53px;
+				border-top-left-radius: 25px;
+				border-top-right-radius: 25px;
+				
+				display: table-cell;
+				vertical-align: middle;
+				text-align: center;
+
+				.text {
+					display: inline-block;
+					width: 100%;
+					height: auto;
+					color: #ffffff;
+					font-size: 18px;
+					margin: 0;
+				}
+			}
+		}
+
+		.openCloseContainer {
+			display: table;
+			width: 100%;
+
+			.textContainer {
+				margin-top: -10px;
+				background: #00A000;
+				width: 100%;
+				height: 26px;
+
+				display: table-cell;
+				vertical-align: middle;
+				text-align: center;
+
+				.text {
+					display: inline-block;
+					width: 100%;
+					height: auto;
+					color: #ffffff;
+					font-size: 12px;
+					margin: 0;
+				}
+			}
+		}
+
+		.graph1Container {
+
+		}
+
+		.graph2Container {
+
+		}
+	}
+}
+
+/* Dropdown Button */
+.dropbtn {
+	background-color: #155EA0;
+	border-radius: 12px;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+	cursor: pointer;
+	width: 122px;
+
+	i {
+		margin-left: 10px;
+	}
+}
+
+/* Dropdown button on hover & focus */
+.dropbtn:hover, .dropbtn:focus {
+    background-color: #2980B9;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+	width: 122px;
+	top: 0;
+	left: 0;
+    position: relative;
+    display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 122px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	z-index: 1;
+	top: -177px;
+	border-top-left-radius: 12px;
+	border-top-right-radius: 12px;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {
+	background-color: #ddd;
+}
+
+.dropdown-content a {
+
+	&:first-child {
+
+		&:hover {
+			border-top-left-radius: 12px;
+			border-top-right-radius: 12px;
+		}
+	}
+}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
+
+.inputContainer {
+	display: inline-flex;
+	width: 100%;
+
+	.dropdown {
+
+	}
+
+	.timeSliderWrapper {
+		width: 100%;
+
+		.slider {
+			//height: 20px;
+		}
+	}
+}
+
+
+@track-color: rgba(169,169,169,0.7);
+@thumb-color: #0D67AC;
+
+@thumb-radius: 8px;
+@thumb-height: 30px;
+@thumb-width: 30px;
+@thumb-shadow-size: 1px;
+@thumb-shadow-blur: 1px;
+@thumb-shadow-color: #111;
+@thumb-border-width: 1px;
+@thumb-border-color: rgba(128,128,128,0.7);
+
+@track-width: 100%;
+@track-height: 20px;
+@track-shadow-size: 2px;
+@track-shadow-blur: 2px;
+@track-border-width: 1px;
+@track-border-color: black;
+
+@track-radius: 5px;
+@contrast: 5%;
+
+.shadow(@shadow-size,@shadow-blur,@shadow-color) {
+  box-shadow: @shadow-size @shadow-size @shadow-blur @shadow-color, 0px 0px @shadow-size lighten(@shadow-color,5%);
+}
+
+.track() {
+  width: @track-width;
+  height: @track-height;
+ 
+  cursor: pointer;
+  animate: 0.2s;
+}
+
+.thumb() {
+  //.shadow(@thumb-shadow-size,@thumb-shadow-blur,@thumb-shadow-color);
+  border: @thumb-border-width solid @thumb-border-color;
+  height: @thumb-height;
+  width: @thumb-width;
+  border-radius: @thumb-radius;
+  background: @thumb-color;
+  cursor: pointer;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  margin: @thumb-height/2 0;
+  width: @track-width;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+
+  &:focus {
+    outline: none;
+  }
+
+  &::-webkit-slider-runnable-track {
+    .track();
+  }
+  
+  &::-webkit-slider-thumb {
+    .thumb();
+    -webkit-appearance: none;
+    margin-top: ((-@track-border-width * 2 + @track-height) / 2) - (@thumb-height / 2);
+  }
+
+  &:focus::-webkit-slider-runnable-track {
+    //background: lighten(@track-color, @contrast);
+  }
+
+  &::-moz-range-track {
+    .track();
+    
+  }
+  &::-moz-range-thumb {
+     .thumb();
+  }
+
+  &::-ms-track {
+    .track(); 
+    background: transparent;
+    border-color: transparent;
+    border-width: @thumb-width 0;
+    color: transparent;
+  }
+
+  &::-ms-fill-lower {
+    background: darken(@track-color, @contrast);
+    border: @track-border-width solid @track-border-color;
+    border-radius: @track-radius*2;
+  }
+  &::-ms-fill-upper {
+    background: @track-color;
+    border: @track-border-width solid @track-border-color;
+    border-radius: @track-radius*2;
+    
+  }
+  &::-ms-thumb {
+    .thumb();
+  }
+  &:focus::-ms-fill-lower {
+    background: @track-color;
+  }
+  &:focus::-ms-fill-upper {
+    background: lighten(@track-color, @contrast);
+  }
+}
+
+#currentDay {
+	pointer-events: none;
+}
+
+#usa {
+	pointer-events: none;
+}
+
+#playPause {
+	pointer-events: none;
+}
+
+#clock{
+    position: absolute;
+   top: 3%;
+   left: 115px;
+   transform: translateX(-50%) translateY(-50%);
+   color: white;
+   font-size: 40px;
+   font-family: Orbitron;
+   letter-spacing: 7px;
+   z-index: 50
 }

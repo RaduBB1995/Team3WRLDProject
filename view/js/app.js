@@ -1,19 +1,26 @@
 const Wrld = require('wrld.js');
 const env = require('./env');
+const sideview = require('./sideview');
+//const sliderFile = require('./slider');
 const { getChairPolys } = require('./api-service');
 const get_Tstamp = require('./get_timestamp');
 const { findTimeStamp } = require('./process-search');
 let chairPolys = [];
 var sliderTimeStamp = "2018-09-04 09:00:00";
+var hour = 0;
+var dayAdjusted = 0;
 //Seat colour variable that is set later after fetching relevant data
 let seatcolour = "";
-var totalNOcp = 0;
-var totalROcp = 0;
-var totalCOcp = 0;
+var availableSeats = 0;
 //Array of JS objects we place our desired chairs into
 let actualChairInfo =[];
-var Chart = require('chart.js');
-var data = [];
+
+var playClicked = false;
+
+var sliderIncrement = 0;
+
+var chairDoughnutData = [];
+
 //get WRLD api key
 
 
@@ -54,7 +61,8 @@ window.addEventListener('load', async () => {
     //Returns all the Data from the JSON file
 
 	actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
-
+	
+	
     //Apply a popup containing a div with the chair's id to each polygon
 	/* function onEachFeature(feature, layer) {
 		console.log("Binding popups");
@@ -77,28 +85,35 @@ window.addEventListener('load', async () => {
     actualChairInfo.forEach((currentChair) => {
       if(currentChair.properties.status === "occupied"){
         seatcolour = "#fe022f";
-		//n = n - 1;
       }else if(currentChair.properties.status === "recentlyOccupied"){
         seatcolour = "#f0e46e";
-			//n = n + 3;
-		//console.log(n);
       }else if(currentChair.properties.status === "notOccupied"){
-        seatcolour = "#00f272";
-		//n = n + 3;
-		//console.log(n);
-		//n = ;
+        seatcolour = "#00f272"
       }
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div id=chair" + currentChair.properties.chairID 
-																																				+ ">Chair #" + currentChair.properties.chairID 
-																																				+ "<div id=" + currentChair.properties.chairID +"occupancy>" 
-																																				+ currentChair.properties.status 
+      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
+																																				//+ Chair #" + currentChair.properties.chairID 
+																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
+																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
+																																				+ "</div>" 
+																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
+																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
+																																				+ "</div>" 
+																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
+																																				+ "Occupants Today: " + occupantsToday(currentChair)
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
+																																				+ "Occupancy graph here"
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
+																																				+ "Status: " + chairStatus(currentChair) 
 																																				+ "</div>" 
 																																				+ "</div>", 
-																																				{closeOnClick: false, 
+																																				{closeOnClick: true, 
 																																				autoClose:true, 
 																																				indoorMapId: 'westport_house', 
-																																				indoorMapFloorId: 0});
+																																				indoorMapFloorId: 0})
+																																				.addTo(map);
 	  //add created variable to featureGroup
       chairGroup.addLayer(polyChair);
       //add polygon to map
@@ -107,18 +122,15 @@ window.addEventListener('load', async () => {
 			function(layer){
 				map.addLayer(layer)}
 			)
+			resetPolyColors();
   });
+  setTimeout(time(), 2000);
   const indoorControl = new WrldIndoorControl('widget-container', map);
   });
 
 
 window.onload = function() {
 	console.log("Building popup is open?: " + buildingPoly.isPopupOpen());
-	setInterval(function() {
-		if(document.getElementById('timeSlider').value != 0){
-			document.getElementById('timeSlider').value += 0.25;
-		}
-	},900000);
 }
 //
   var buildingLatLong = [
@@ -131,139 +143,249 @@ window.onload = function() {
     [56.459857, -2.978132]
   ]
 
-var buildingPoly = L.polygon(buildingLatLong, {color: '#7aebff'}).addTo(map);
-   var marker = L.marker([56.460237, -2.977746], {        
-        title: "This is indoors!",
-        indoorMapId: "westport_house",
-        indoorMapFloorId: 0
-      }).addTo(map); 
-	  
-	  let title = document.getElementById("mydiv");
-
-marker.unbindPopup().bindPopup(title, { 
-  className: 'infopopupexterior',
-  autoPan:true,
-  maxWidth: "auto"
-}).openPopup();
-
-/* map.openPopup("<div id=\"restauranttitle\"><h2>Westport Hotel Restaurant</h2></div>\
-<div id=\"restaurantinfo\">\
-</div>", 
-[56.460237, -2.977746], {indoorMapId: 'westport_house', indoorMapFloorId: 0, closeOnClick: false, keepInView: true, closeButton: false, className: 'infopopup', autoClose: false}); */
+  var buildingPoly = L.polygon(buildingLatLong, {color: '#7aebff'}).addTo(map);
+var buildingPoly2 = L.polygon(buildingLatLong, {elevation : 20, color: '#7aebff'}).addTo(map);
 
 //var exteriorMarker = L.marker([56.459913, -2.977985], { elevation : 10 , title: "Westport Hotel Restaurant"}).addTo(map);
 
 buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant</h2></div>\
 <div id='restaurantinfo'>\
-	<div id='restaurantinfo1'><svg height='100' width='500' >\
-						<rect  x='30' y='75' width= '198' height='10' stroke='black' stroke-width='4' fill='red'  />\
-						<rect id = 't' x='30' y='77' width= '0' height='6' stroke='black' stroke-width='0' fill='green' />\
-					</svg>\</div>\
-	<div id='restaurantinfo2'><p>Seats available here:</p></div>\
+	<div id='restaurantinfo1'>\
+					<div id='mydiv' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart'></canvas></div>\
+	<div id='restaurantinfo2'><p>Seats available here</p></div>\
 	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
 	<div id='westportinfo'><p><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
 	<div id='restaurantphoto'><img src='https://zeno.computing.dundee.ac.uk/2017-ac32006/team3/assets/images/westport.jpg'></img></div>\
-</div>", {className: 'infopopupexterior', closeOnClick: false, autoClose: false, offset:[0,-50]}).openPopup();
+</div>", {className: 'infopopupexterior', closeOnClick: true, autoClose: false, offset:[0,-50]}).openPopup();
 	
 function convertSlider2Timestamp(sliderHour, sliderValue){
 		sliderTimeStamp  = get_Tstamp.calculate_Tstamp(sliderHour,sliderValue);
-		
+	time();	
 }
-	
-
 
 function sliderToHour() {	
-		totalNOcp = 0;
-		totalROcp = 0;
-		totalCOcp = 0;
+	
 	//assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
 	var slide = document.getElementById('timeSlider').value;
+	hour = 24 - Math.abs(slide % 24); //remainder is equivalent to relative simulated time
 	console.log("Slider is at: " + slide);
-	var hour = Math.abs(slide % 24); //remainder is equivalent to relative simulated time
+	if(daySelected === 0){
+		dayAdjusted = -Math.abs(hour + 72);
+	} else if (daySelected === 1){
+		dayAdjusted = -Math.abs(hour + 48);
+	} else if (daySelected === 2){
+		dayAdjusted = -Math.abs(hour + 24);
+	} else if (daySelected === 3){
+		dayAdjusted = -Math.abs(hour);
+	}
 	console.log("Relative time is: " + hour);
-	//var totalUOcp = (totalNOcp + totalROcp)/3;
 	//passing hour value to be used to calculate which timestamp to use
-	convertSlider2Timestamp(hour,slide);
-	if (hour >= 17 && hour < 23) {
-		findTimeStamp(sliderTimeStamp, chairPolys);
+	convertSlider2Timestamp(hour,dayAdjusted);
+	
+	if (hour >= 9 && hour < 18) {
+		actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
+		console.log(actualChairInfo);
 		resetPolyColors();
+		console.log(actualChairInfo);
 		console.log("Restaurant open");
-		document.getElementById("t").setAttribute('width', totalNOcp + totalROcp);
-				//console.log("total: "+ totalUOcp);
-		//hide element saying restaurant is closed, show element saying restaurant is open
+		availableSeats = doughnutNC + doughnutNO;
+		//hide element saying restaurant is closed, show element saying restaurant
+		document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
+		//document.getElementById("bar").setAttribute('width',  availableSeats*3);
+		document.getElementById('sidebarOpen').style.display = 'block';
+		document.getElementById('sidebarOCB').style.background= '#00A000'; 
+		document.getElementById('sidebarClosed').style.display = 'none';
 		document.getElementById('restaurantopen').style.display = 'block';
+		
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
 		document.getElementById('restaurantclosed').style.display = 'none';
+		
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
-		
 		buildingPoly.getPopup().setContent();
-		
 			//fetchTimestamp(sliderTimeStamp);
 	}else{
-		actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
-		resetPolyColors();
+		
+		resetPolyClosed();
 		console.log("Restaurant closed");
-		//let totalNOcp = 66*3;
-		document.getElementById("t").setAttribute('width',  totalNOcp);
-		//console.log("total: "+ totalUOcp);
 		//console.log(buildingPoly.getPopup().getContent());
 		//hide element saying restaurant is open, show element saying restaurant is closed
+		document.getElementById('restaurantinfo2').innerHTML = "No seats available";
+		//document.getElementById("bar").setAttribute('width',  0);
+		document.getElementById('sidebarOpen').style.display = 'none';
+		document.getElementById('sidebarOCB').style.background = '#FF0000';
+		document.getElementById('sidebarClosed').style.display = 'block';
 		document.getElementById('restaurantopen').style.display = 'none';
+		
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
 		document.getElementById('restaurantclosed').style.display = 'block';
+
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
-		
 		buildingPoly.getPopup().setContent(); //this... shouldn't work. it should empty the popup's contents. and yet it works as a better updater than their own update() method.
 		//console.log(buildingPoly.getPopup().getContent());
 			//fetchTimestamp(sliderTimeStamp);
+
 	}
 }
-function createDataArray(){
-	data[0] = totalROcp;
-	data[1]	=  totalNOcp;
-	data[2] = totalCOcp;
+
+function updateChart(myDoughnutChart, chairDoughnutData)
+{
+	myDoughnutChart.data.datasets.forEach((dataset) =>{
+		dataset.data.push(chairDoughnutData);
+		console.log("push occuried");
+	});
+	myDoughnutChart.update();
 }
-function resetPolyColors(){
-	totalNOcp = 0;
-	totalROcp = 0;
-	totalCOcp = 0;
+
+var doughnutO = 0;
+var doughnutNO = 0;
+var doughnutNC = 0;
+
+
+function createDoughnutDataArray(){
+	chairDoughnutData[0] = doughnutO;
+	chairDoughnutData[1] = doughnutNO;
+	chairDoughnutData[2] = doughnutNC;
+}
+
+function resetPolyClosed(){
+
+	doughnutO = 0;
+	doughnutNO = 0;
+	doughnutNC = 0;
 	chairGroup.eachLayer(
 		function(layer){
 		 map.removeLayer(layer)
 		chairGroup.removeLayer(layer)}
 		)
-	console.log("Destiny2");
+	console.log(actualChairInfo);
+	actualChairInfo.forEach((currentChair) => {
+		currentChair.properties.status = "occupied";
+			seatcolour = "#fe022f";
+			doughnutO += 1;
+		
+	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
+	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
+																																				//+ Chair #" + currentChair.properties.chairID 
+																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
+																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
+																																				+ "</div>" 
+																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
+																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
+																																				+ "</div>" 
+																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
+																																				+ "Occupants Today: " + occupantsToday(currentChair)
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
+																																				+ "Occupancy graph here"
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
+																																				+ "Status: " + chairStatus(currentChair) 
+																																				+ "</div>" 
+																																				+ "</div>", 
+																																				{closeOnClick: true, 
+																																				autoClose:true, 
+																																				indoorMapId: 'westport_house', 
+																																				indoorMapFloorId: 0});
+//add created variable to featureGroup
+chairGroup.addLayer(polyChair);
+console.log(chairGroup);
+//add polygon to map
+	})	
+	chairGroup.eachLayer(
+		function(layer){
+			map.addLayer(layer)}
+		)
+
+
+		createDoughnutDataArray();
+		updateChart(myDoughnutChart, chairDoughnutData);
+} 
+
+function getColour(chair){
+	if(chair.properties.status === "occupied"){
+		return "#fe022f";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "#f0e46e";
+	}else if(chair.properties.status === "notOccupied"){
+		return "#00f272";
+	}
+}
+
+function titleStatus(chair){
+	if(chair.properties.status === "occupied"){
+		return "Seat Unavailable";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "Waiting to be Cleared";
+	}else if(chair.properties.status === "notOccupied"){
+		return "Seat Available";
+	}
+}
+
+function chairStatus(chair){
+	if(chair.properties.status === "occupied"){
+		return "Taken";
+	}else if(chair.properties.status === "recentlyOccupied"){
+		return "Being Cleared";
+	}else if(chair.properties.status === "notOccupied"){
+		return "Free";
+	}
+}
+
+function lastOccupied(chair){
+	
+	
+}
+
+function occupantsToday(chair){
+	return chair.properties.UniqueOccupants;
+	
+}
+
+function resetPolyColors(){
+	doughnutO = 0;
+	doughnutNO = 0;
+	doughnutNC = 0;
+	chairGroup.eachLayer(
+		function(layer){
+		 map.removeLayer(layer)
+		chairGroup.removeLayer(layer)}
+		)
 	console.log(chairGroup);
 	actualChairInfo.forEach((currentChair) => {
 		if(currentChair.properties.status === "occupied"){
 			seatcolour = "#fe022f";
-			if(totalCOcp < 199){
-			totalCOcp = totalCOcp + 3;
-			};
+			doughnutO += 1;
 		}else if(currentChair.properties.status === "recentlyOccupied"){
 			seatcolour = "#f0e46e";
-			if (totalROcp < 199){
-			totalROcp = totalROcp + 3;
-			};
+			doughnutNO += 1;
 		}else if(currentChair.properties.status === "notOccupied"){ 
 			seatcolour = "#00f272";
-			if (totalNOcp <199){
-				totalNOcp = totalNOcp + 3;
-			};
-			//console.log(n);
+			doughnutNC += 1;
 		}
 	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div id=chair" + currentChair.properties.chairID 
-	 + ">Chair #" + currentChair.properties.chairID 
-	 + "<div id=" + currentChair.properties.chairID +"occupancy>" 
-	 + currentChair.properties.status 
-	 + "</div>" 
-	 + "</div>", 
-	 {closeOnClick: false, 
-	 autoClose:true, 
-	 indoorMapId: 'westport_house', 
-	 indoorMapFloorId: 0});
+	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
+																																				//+ Chair #" + currentChair.properties.chairID 
+																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>" 
+																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
+																																				+ "</div>" 
+																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>" 
+																																				+ "Last Occupied: " //+ lastOccupied(currentChair)	
+																																				+ "</div>" 
+																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>" 
+																																				+ "Occupants Today: " + occupantsToday(currentChair)
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>" 
+																																				+ "Occupancy graph here"
+																																				+ "</div>" 
+																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>" 
+																																				+ "Status: " + chairStatus(currentChair) 
+																																				+ "</div>" 
+																																				+ "</div>", 
+																																				{closeOnClick: true, 
+																																				autoClose:true, 
+																																				indoorMapId: 'westport_house', 
+																																				indoorMapFloorId: 0})
 //add created variable to featureGroup
 chairGroup.addLayer(polyChair);
 //add polygon to map
@@ -272,7 +394,10 @@ chairGroup.addLayer(polyChair);
 		function(layer){
 			map.addLayer(layer)}
 		)
-		createDataArray();
+
+
+		createDoughnutDataArray();
+		updateChart(myDoughnutChart, chairDoughnutData);
 } 
 
 function checkValue(event) {
@@ -281,10 +406,7 @@ function checkValue(event) {
 }
 	
 function clickBuilding(event) {
-	//document.getElementById("t").setAttribute('width', n);
 	this.getPopup().setLatLng(this.getCenter());
-	//this.getPopup().setContent();
-	
 }	
 
 function mouseOverBuilding(event) {
@@ -294,7 +416,7 @@ function mouseOverBuilding(event) {
 function mouseOutBuilding(event) {
 	this.setStyle({color: '#7aebff'});
 }	
-
+	
 function onEnter(event) {
     console.log("Entered indoor map: " + event.indoorMap.getIndoorMapName());
 	//document.getElementById("hidingslider").style.display = "block";
@@ -306,11 +428,17 @@ function onEnter(event) {
 			durationSeconds:2
 			});
 	}, 0);
-	//resetPolyColors();
+	$("#sidebarButton").css("display","inline-block");
+	$(".sideView").css("display","block");
+	setTimeout(function(){
+		$("#sidebarButton").trigger("click");
+	}, 2000);
 }
 function onExit(event) {
     console.log("Exited indoor map");
-	document.getElementById("hidingslider").style.display = "none";
+	//document.getElementById("hidingslider").style.display = "none";
+	$("#sidebarButton").css("display","none");
+	$(".sideView").css("display","none");
 }
 $.fn.redraw = function(){
   $(this).each(function(){
@@ -318,31 +446,13 @@ $.fn.redraw = function(){
   });
 };
 map.indoors.on("indoormapenter", onEnter);
-//map.indoors.on("indoormapexit", onExit);
+map.indoors.on("indoormapexit", onExit);
 buildingPoly.on("mouseover", mouseOverBuilding);
 buildingPoly.on("mouseout", mouseOutBuilding);
 buildingPoly.on("click", clickBuilding);
 buildingPoly.on("popupopen", checkValue);
 $("#timeSlider").on("change", sliderToHour);
- let ctx = document.getElementById("myChart");
-  let myChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Recently Occupied', 'Un-Occupied', 'Occupied'],
-      datasets: [{
-        label: 'Grafik',
-        data: data,
-        backgroundColor: [
-		'rgba(255,255,0,0.4)',
-		'rgba(0,255,0,0.4)',
-		'rgba(255,0,0,0.4)'
-		]
-      }]
-    },
-    options: {
-      responsive: true
-    }
-  });
+
 // function fetchTimestamp(str)
 // {
 // if (str==="closed")
@@ -367,3 +477,232 @@ $("#timeSlider").on("change", sliderToHour);
 // xmlhttp.open("GET","getcustomer.asp?q="+str,true);
 // xmlhttp.send();
 // }
+
+var ctx = document.getElementById('myDoughnutChart').getContext('2d');
+
+var myDoughnutChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+		datasets: [{
+			data: chairDoughnutData,
+			backgroundColor: [
+				'#ff0a1e',
+				'#f3e658',
+				'#1df460'
+				
+			]
+		}],
+	
+		// These labels appear in the legend and in the tooltips when hovering different arcs
+		labels: [
+			'Unavailable',
+			'To Be Cleared',
+			'Available'
+			
+		]
+	}
+});
+//increment slider when play button is clicked
+function incrementSlider(){
+	console.log("Beginning increment function");
+	sliderIncrement = setInterval(function(){
+			if($('#timeSlider').val() != 0){
+			console.log("Incrementing slider by 0.5");
+			var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
+			console.log("New value: " + newSlide);
+			$('#timeSlider').val(newSlide);
+			console.log($('#timeSlider').val());
+			$('#timeSlider').trigger('change');
+		}else{
+			console.log("End of slider reached, going to next day...");
+			if(daySelected === 0){
+				console.log("On day 1, going to day 2..");
+				$("#link2Clicked").trigger('click');
+				$('#timeSlider').val(-Math.abs(24));
+				$('#timeSlider').trigger('change');
+			}
+			if(daySelected === 1){
+				console.log("On day 2, going to day 3..");
+				$("#link3Clicked").trigger('click');
+				$('#timeSlider').val(-Math.abs(24));
+				$('#timeSlider').trigger('change');
+			}
+			if(daySelected === 2){
+				console.log("On day 3, going to day 4..");
+				$("#link4Clicked").trigger('click');
+				$('#timeSlider').val(-Math.abs(24));
+				$('#timeSlider').trigger('change');
+			}
+			if(daySelected === 3){
+				console.log("On day 4, ending increment");
+				$(".playButton").trigger('click');
+			}
+		}
+	}, 5000);
+}
+
+
+
+function stopIncrement(){
+	console.log("Stopping increment");
+	clearInterval(sliderIncrement);
+}
+
+//from slider.js
+/* When the user clicks on the button, 
+toggle between hiding and showing the dropdown content */
+$("#sliderDropdownButton").click(function () {
+    document.getElementById("myDropdown").classList.add("show");
+        $(".dropbtn").css('border-top-left-radius', '0');
+        $(".dropbtn").css('border-top-right-radius', '0');
+
+    document.getElementById("usa").classList.add("fa-angle-down");
+    document.getElementById("usa").classList.remove("fa-angle-up");    
+});
+
+
+window.onclick = function(event) {
+    if (!event.target.matches('#sliderDropdownButton') ) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        var i;
+        for (i = 0; i < dropdowns.length; i++) {
+        var openDropdown = dropdowns[i];
+        if (openDropdown.classList.contains('show')) {
+            openDropdown.classList.remove('show');
+            $(".dropbtn").css('border-top-left-radius', '12px');
+            $(".dropbtn").css('border-top-right-radius', '12px');
+            document.getElementById("usa").classList.remove("fa-angle-down");
+            document.getElementById("usa").classList.add("fa-angle-up");    
+        }
+        }
+    } else {
+        $(".dropbtn").css('border-top-left-radius', '0');
+        $(".dropbtn").css('border-top-right-radius', '0');
+    }
+}
+
+var daySelected = 2;
+
+$("#link1Clicked").click(function () {
+	
+    daySelected = 0;
+    $("#currentDay").html("01/09/2018");
+});
+
+$("#link2Clicked").click(function () {
+    daySelected = 1;
+    $("#currentDay").html("02/09/2018");
+});
+
+$("#link3Clicked").click(function () {
+    daySelected = 2;
+    $("#currentDay").html("03/09/2018");
+});
+
+$("#link4Clicked").click(function () {
+    daySelected = 3;
+    $("#currentDay").html("04/09/2018");
+});
+
+$(".rewindButton").click(function(){
+	if($('#timeSlider').val() != -24){
+		var newSlide = -Math.abs($('#timeSlider').val()) - 0.5;
+		$('#timeSlider').val(newSlide);
+		$('#timeSlider').trigger('change');
+	}
+});
+
+$(".forwardButton").click(function(){
+	if($('#timeSlider').val() != 0){
+		var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
+		$('#timeSlider').val(newSlide);
+		$('#timeSlider').trigger('change');
+	}
+});
+
+$(".playButton").click(function() {
+	if(playClicked === false){
+		incrementSlider();
+		playClicked = true;
+		document.getElementById("playPause").classList.remove("fa-play");
+		document.getElementById("playPause").classList.add("fa-pause");
+	}else{
+		stopIncrement();
+		playClicked = false;
+		document.getElementById("playPause").classList.add("fa-play");
+		document.getElementById("playPause").classList.remove("fa-pause");
+	}
+});
+
+function time(){
+    var dateAndTime = sliderTimeStamp;
+    var timeFromTimeStamp;
+    timeFromTimeStamp = dateAndTime.substr(11);
+	timeFromTimeStamp = timeFromTimeStamp.slice(0, -3);
+    console.log("TIME IS:" + timeFromTimeStamp);
+	$("#clock").html(timeFromTimeStamp);
+}
+
+
+let title = document.getElementById("mydiv");
+
+/* buildingPoly.unbindPopup().bindPopup(title, { 
+  className: 'infopopupexterior',
+  autoPan:true,
+  maxWidth: "auto"
+}).openPopup();
+ */
+buildingPoly.on("click", (event, MouseEvent) => {
+var ctx2 = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx2, {
+    type: 'horizontalBar',
+    data: {
+        labels: ['Avialability'],
+        datasets: [{
+            //label: '# of Votes',
+            data: [doughnutO],
+            backgroundColor: [
+              '#ff0a1e'
+            ],
+			label: ["Label 1"],
+            borderColor: [
+                'rgba(255,99,132,1)'
+            ],
+            borderWidth: 1
+        },
+		{
+			 data: [doughnutNC],
+            backgroundColor: [
+                '#f3e658'
+            ],
+			label: ["Label 2"],
+            borderColor: [
+                'rgba(255,99,132,1)'
+            ],
+            borderWidth: 1
+		},
+		{
+			 data: [doughnutNO],
+            backgroundColor: [
+				'#1df460'
+            ],
+			label: ["Label 3"],
+            borderColor: [
+                'rgba(255,99,132,1)'
+            ],
+            borderWidth: 1
+		}
+		]
+    },
+	options: {
+        scales: {
+            xAxes: [{
+                stacked: true
+            }],
+            yAxes: [{
+                stacked: true
+            }]
+        }
+    }
+})
+});

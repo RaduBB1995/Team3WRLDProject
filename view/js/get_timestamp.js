@@ -9,7 +9,6 @@ var half_hour;
     	//half hour gaps
     	// 
     	
-    	if (sliderHour >= 9 && sliderHour <= 18){
 
     		//check if sliderHour is a decimal 
     		if (Number.isInteger(sliderHour)) {
@@ -23,7 +22,35 @@ var half_hour;
     		}
 
     		//using the slider value i get which day it is 
-    		 if (sliderValue >= -48 && sliderValue <= -24)
+			if (sliderValue >= -96 && sliderValue < -72)
+			 {
+				 if(whole_hour<10)
+				 {
+    		 		//adds a leading zero to timestamp to correct format
+    		 		var timeStamp = "2018-09-01 0" + whole_hour +":"+half_hour+":00";
+    		 		console.log("timestamp calcauted  " + timeStamp);
+    		 	}
+    		 	else{
+    		 		var timeStamp = "2018-09-01 " + whole_hour +":"+half_hour+":00";
+    		 		console.log("timestamp calcauted  " + timeStamp);
+    		 	}
+			 }
+			 
+    		 if (sliderValue >= -72 && sliderValue < -48)
+			 {
+				 if(whole_hour<10)
+				 {
+    		 		//adds a leading zero to timestamp to correct format
+    		 		var timeStamp = "2018-09-02 0" + whole_hour +":"+half_hour+":00";
+    		 		console.log("timestamp calcauted  " + timeStamp);
+    		 	}
+    		 	else{
+    		 		var timeStamp = "2018-09-02 " + whole_hour +":"+half_hour+":00";
+    		 		console.log("timestamp calcauted  " + timeStamp);
+    		 	}
+			 }
+			 
+			 if (sliderValue >= -48 && sliderValue <= -24)
     		 {
     		 	
     		 	if (whole_hour<10)
@@ -56,11 +83,7 @@ var half_hour;
     		 }
 
 
-    	}
-    	else
-    	{
-    		return "closed";
-    	}
+    	
 
     	
     	return timeStamp;

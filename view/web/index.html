@@ -4,26 +4,94 @@
 	<head>
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="../css/app.less" />
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 		<title>Getting started with WRLD</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/latest/indoor_control.js"></script>
+		
 	</head>
 	<body>
-	<div id='mydiv' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart'></canvas></div>
+
+		<div id="clock"></div>
 		<div id="widget-container" class="wrld-widget-container"></div>
 		<div class="customUIContainer">
-			<div id="hidingslider" class="slidecontainer" >
-				<input type="range" onchange="sliderChange(this.value);" min="-48" max="0" value="0" class="slider" id="timeSlider" step="0.5">
-				<output id="sliderValue">0</output>
+
+			<div class="sideViewToggleContainer">
+				<button class="slideViewToggle" id="sidebarButton"><i class="fas fa-angle-left"></i></button>
+			</div>
+
+			<div class="sideViewContainer">
+				<div class="sideView">
+					<div class="titleContainer">
+						<div class="Title">
+
+							<p class="text">
+								Westport Hotel Restaurant
+							</p>
+						</div>
+					</div>
+					<div class="openCloseContainer">
+						<div class="textContainer" id="sidebarOCB">
+
+							<p class="text" id="sidebarOpen" style="display:block">
+								Open
+							</p>
+							<p class="text" id="sidebarClosed" style="display: none">
+								Closed
+							</p>
+						</div>
+					</div>
+					<div class="graph1Container">
+							<canvas id="myDoughnutChart"></canvas>
+					</div>
+					<div class="graph2Container">
+
+					</div>
+				</div>
+			</div>
+
+			<div id="hidingslider" class="slidecontainer">
+				
+				<div class="sliderWrapper">
+
+				
+
+				<div class="mediaButtonsContainer">
+					<div class="rewindContainer">
+						<button class="rewindButton"><i class="fa fa-backward"></i></button>
+					</div>
+
+					<div class="playContainer">
+						<button class="playButton"><i id="playPause" class="fa fa-play"></i></button>
+					</div>
+
+					<div class="forwardContainer">
+						<button class="forwardButton"><i class="fa fa-forward"></i></button>
+					</div>
+				</div>
+
+				<div style="display: block;"></div>
+				<div class="inputContainer">
+
+					<div class="dropdown">
+						<div id="myDropdown" class="dropdown-content">
+							<a href="#" id="link1Clicked">01/09/2018</a>
+							<a href="#" id="link2Clicked">02/09/2018</a>
+							<a href="#" id="link3Clicked">03/09/2018</a>
+							<a href="#" id="link4Clicked">04/09/2018</a>
+						</div>
+						<button id="sliderDropdownButton" class="dropbtn"><span id="currentDay">03/09/2018</span><i id="usa" class="fas fa-angle-up"></i></button>
+					</div>
+					<div class="timeSliderWrapper">
+						<input type="range" min="-24" max="0" value="-15" class="slider" id="timeSlider" step="0.5">
+					</div>
+				</div>
+				</div>
 			</div>
 			<div id="map"></div>
 		</div>
 		
 		<script src="../js/app.js"></script>
-		<script>function sliderChange(val) {
-				document.getElementById('sliderValue').innerHTML = val;
-			}
-		</script>
 	</body>
 </html>
