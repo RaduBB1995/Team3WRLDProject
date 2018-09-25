@@ -548,6 +548,16 @@ var myDoughnutChart = new Chart(ctx, {
 function incrementSlider(){
 	console.log("Beginning increment function");
 	sliderIncrement = setInterval(function(){
+		$("#loadingBar").toggleClass('widen');
+		$("#loadingBar").css('transition','width 0');
+		$("#loadingBar").css('-webkit-transition','width 0');
+		$("#loadingBar").css('-moz-transition','width 0');
+		$("#loadingBar").css('width','0');
+		$("#loadingBar").css('width','');
+		$("#loadingBar").css('transition','');
+		$("#loadingBar").css('-webkit-transition','');
+		$("#loadingBar").css('-moz-transition','');
+		$("#loadingBar").toggleClass('widen');
 			if($('#timeSlider').val() != 0){
 			console.log("Incrementing slider by 0.5");
 			var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
@@ -663,29 +673,29 @@ $(".forwardButton").click(function(){
 });
 
 $(".playButton").click(function() {
+
 	if(playClicked === false){
+		$("#loadingBar").toggleClass('resetWidth');
+		$("#loadingBar").toggleClass('widen');
+
 		incrementSlider();
-		loadBar();
-		playClicked = true;
+
+		
 		document.getElementById("playPause").classList.remove("fa-play");
 		document.getElementById("playPause").classList.add("fa-pause");
-		var barWidth = 1;
-		var progress = setInterval(barLoad, 50);
-		function barLoad() {
-			if(barWidth < 100){
-				barWidth++;
-				$("#loadingBar").css("width",barWidth + "%");
-			}else if(barWidth === 100){
-				barWidth = 1;
-				$("#loadingBar").css("width",barWidth + "%");
-			}
+
+		playClicked = true;
 	}
-	}else{
+	else {
+		$("#loadingBar").toggleClass('widen');
+		$("#loadingBar").toggleClass('resetWidth');
+		
 		stopIncrement();
-		clearInterval(progress);
+		//clearInterval(progress);
 		playClicked = false;
 		document.getElementById("playPause").classList.add("fa-play");
 		document.getElementById("playPause").classList.remove("fa-pause");
+		playClicked = false;
 	}
 });
 

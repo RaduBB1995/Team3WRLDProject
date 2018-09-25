@@ -212,14 +212,35 @@ html,body {
 						background: #5888ad;
 						/* border: 1px solid; */
 						display: block;
-						width: 1%;
+						width: 0%;
 						z-index: -1;
 						position: absolute;
 						height: 100%;
 						border-radius: 0;
 						top: 0;
 						left: 0;
+						
+						
+
+						&.widen {
+							width: 100%;
+							-webkit-transition: width 5s;
+							-moz-transition: width 5s;
+							transition: width 5s;
+							-moz-transition-timing-function: linear;
+							-webkit-transition-timing-function: linear;
+							transition-timing-function: linear;
+						}
+
+						&.resetWidth {
+							width: 0%;
+							-webkit-transition: width 0s;
+							-moz-transition: width 0s;
+							transition: width 0s;
+						}
 					}
+
+					
 				}
 			}
 
