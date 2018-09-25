@@ -9,11 +9,9 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/latest/indoor_control.js"></script>
-		
+
 	</head>
 	<body>
-
-		<div id="clock"></div>
 		<div id="widget-container" class="wrld-widget-container"></div>
 		<div class="customUIContainer">
 
@@ -46,52 +44,56 @@
 							<canvas id="myDoughnutChart"></canvas>
 					</div>
 					<div class="graph2Container">
-
+					<div id='mydiv' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart'></canvas></div>
 					</div>
 				</div>
 			</div>
 
 			<div id="hidingslider" class="slidecontainer">
-				
+
 				<div class="sliderWrapper">
-
-				
-
-				<div class="mediaButtonsContainer">
-					<div class="rewindContainer">
-						<button class="rewindButton"><i class="fa fa-backward"></i></button>
+					<div class="clockWrapper">
+						<div id="clock"></div>
 					</div>
 
-					<div class="playContainer">
-						<button class="playButton"><i id="playPause" class="fa fa-play"></i></button>
-					</div>
-
-					<div class="forwardContainer">
-						<button class="forwardButton"><i class="fa fa-forward"></i></button>
-					</div>
-				</div>
-
-				<div style="display: block;"></div>
-				<div class="inputContainer">
-
-					<div class="dropdown">
-						<div id="myDropdown" class="dropdown-content">
-							<a href="#" id="link1Clicked">01/09/2018</a>
-							<a href="#" id="link2Clicked">02/09/2018</a>
-							<a href="#" id="link3Clicked">03/09/2018</a>
-							<a href="#" id="link4Clicked">04/09/2018</a>
+					<div class="mediaButtonsContainer">
+						<div class="rewindContainer">
+							<button class="rewindButton"><i class="fa fa-backward"></i></button>
 						</div>
-						<button id="sliderDropdownButton" class="dropbtn"><span id="currentDay">03/09/2018</span><i id="usa" class="fas fa-angle-up"></i></button>
+
+						<div class="playContainer">
+							<button class="playButton">
+								<i id="playPause" class="fa fa-play"></i>
+								<div id="loadingBar"></div>
+							</button>
+						</div>
+
+						<div class="forwardContainer">
+							<button class="forwardButton"><i class="fa fa-forward"></i></button>
+						</div>
 					</div>
-					<div class="timeSliderWrapper">
-						<input type="range" min="-24" max="0" value="-15" class="slider" id="timeSlider" step="0.5">
+
+					<div style="display: block;"></div>
+					<div class="inputContainer">
+
+						<div class="dropdown">
+							<div id="myDropdown" class="dropdown-content">
+								<a href="#" id="link1Clicked">01/09/2018</a>
+								<a href="#" id="link2Clicked">02/09/2018</a>
+								<a href="#" id="link3Clicked">03/09/2018</a>
+								<a href="#" id="link4Clicked">04/09/2018</a>
+							</div>
+							<button id="sliderDropdownButton" class="dropbtn"><span id="currentDay">03/09/2018</span><i id="usa" class="fas fa-angle-up"></i></button>
+						</div>
+						<div class="timeSliderWrapper">
+							<input type="range" min="-24" max="0" value="-15" class="slider" id="timeSlider" step="0.5">
+						</div>
 					</div>
-				</div>
 				</div>
 			</div>
 			<div id="map"></div>
 		</div>
-		
+
 		<script src="../js/app.js"></script>
 	</body>
 </html>
