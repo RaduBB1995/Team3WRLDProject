@@ -20,9 +20,32 @@ var playClicked = false;
 var sliderIncrement = 0;
 var testArray = [];
 var chairDoughnutData = [];
+var dbTimeArray = [];
+var dbdbTimeArray = [];
 
+var halfTimeArray = [];
+var oneTimeArray = [];
+var onehalfTimeArray = [];
+var twoTimeArray = [];
+
+var currYesterday = [];
+var halfTimeDBArray = [];
+var oneTimeDBArray = [];
+var onehalfTimeDBArray = [];
+var twoTimeDBArray = [];
+
+var currOccupancy = 0;
+var halfTimeOcc = 0;
+var oneTimeOcc = 0;
+var oneHalfTimeOcc = 0;
+var twoTimeOcc = 0;
+
+var currYOccupancy = 0;
+var halfYTimeOcc = 0;
+var oneYTimeOcc = 0;
+var oneHalfYTimeOcc = 0;
+var twoYTimeOcc = 0;
 //get WRLD api key
-
 
 const keys = {
   wrld: env.WRLD_KEY,
@@ -171,6 +194,72 @@ function convertSlider2Timestamp(sliderHour, sliderValue){
 	time();
 }
 
+function populateRestaurantChart(){
+  //For retreveing information from days prior (for chart.js)
+  //Counts for current day
+  currOccupancy = 0;
+  halfTimeOcc = 0;
+  oneTimeOcc = 0;
+  oneHalfTimeOcc = 0;
+  twoTimeOcc = 0;
+
+  //Counts for previous day
+  currYOccupancy = 0;
+  halfYTimeOcc = 0;
+  oneYTimeOcc = 0;
+  oneHalfYTimeOcc = 0;
+  twoYTimeOcc = 0;
+
+  //Arrays of chair objects from current day timestamps
+  halfTimeArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 0.5,(dayAdjusted)),chairPolys);
+  oneTimeArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 1,(dayAdjusted)),chairPolys);
+  onehalfTimeArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 1.5,(dayAdjusted)),chairPolys);
+  twoTimeArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 2,(dayAdjusted)),chairPolys);
+
+  //Arrays of chair objects from previous day timestamp
+  currYesterday = findTimeStamp(get_Tstamp.calculate_Tstamp(hour,(dayAdjusted - 24)),chairPolys);
+  halfTimeDBArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 0.5,(dayAdjusted - 24)),chairPolys);
+  oneTimeDBArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 1,(dayAdjusted - 24)),chairPolys);
+  onehalfTimeDBArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 1.5,(dayAdjusted - 24)),chairPolys);
+  twoTimeDBArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 2,(dayAdjusted - 24)),chairPolys);
+
+  //Get total occupancy at current time going  backwards 4 incremnts
+  actualChairInfo.forEach((currInstance) =>{
+    currOccupancy += currInstance.properties.UniqueOccupants;
+  });
+  halfTimeArray.forEach((halfInstance) =>{
+      halfTimeOcc += halfInstance.properties.UniqueOccupants;
+  });
+  oneTimeArray.forEach((oneInstance) =>{
+      oneTimeOcc += oneInstance.properties.UniqueOccupants;
+  });
+  onehalfTimeArray.forEach((onehalfInstance) =>{
+      oneHalfTimeOcc += onehalfInstance.properties.UniqueOccupants;
+  });
+  twoTimeArray.forEach((twoInstance) =>{
+      twoInstance += twoInstance.properties.UniqueOccupants;
+  });
+
+  //Same totals from previous day
+  currYesterday.forEach((currYInstance) =>{
+    currYOccupancy += currYInstance.properties.UniqueOccupants
+  });
+  halfTimeDBArray.forEach((halfYInstance) =>{
+      halfYTimeOcc += halfYInstance.properties.UniqueOccupants;
+  });
+  oneTimeDBArray.forEach((oneYInstance) =>{
+      oneYTimeOcc += oneYInstance.properties.UniqueOccupants;
+  });
+  onehalfTimeDBArray.forEach((onehalfYInstance) =>{
+      oneHalfYTimeOcc += onehalfYInstance.properties.UniqueOccupants;
+  });
+  twoTimeDBArray.forEach((twoYInstance) =>{
+      twoYTimeOcc += twoYInstance.properties.UniqueOccupants;
+  });
+
+}
+
+
 function sliderToHour() {
 	//assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
 	var slide = document.getElementById('timeSlider').value;
@@ -190,16 +279,16 @@ function sliderToHour() {
 	convertSlider2Timestamp(hour,dayAdjusted);
 
 		actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
-
+    populateRestaurantChart();
 		resetPolyColors();
 
-		
+
 		availableSeats = doughnutNC + doughnutNO;
 		//hide element saying restaurant is closed, show element saying restaurant
 
-		
-		if(hour >= 9 && hour <=18){		
-			console.log("Restaurant open");		
+
+		if(hour >= 9 && hour <=18){
+			console.log("Restaurant open");
 			document.getElementById('sidebarOpen').style.display = 'block';
 			document.getElementById('sidebarOCB').style.background= '#00A000';
 			document.getElementById('sidebarClosed').style.display = 'none';
@@ -583,7 +672,7 @@ $(".playButton").click(function() {
 		var barWidth = 1;
 		var progress = setInterval(barLoad, 50);
 		function barLoad() {
-			if(barWidth < 100){	
+			if(barWidth < 100){
 				barWidth++;
 				$("#loadingBar").css("width",barWidth + "%");
 			}else if(barWidth === 100){

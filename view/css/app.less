@@ -10,7 +10,7 @@ html,body {
 		min-height: 100%;
 	}
 
-	
+
 #map {
 		width: 100%;
 		height: 100%;
@@ -20,7 +20,7 @@ html,body {
 	}
 
 
-	
+
 #restaurantinfo{
 
 	.shown{
@@ -30,21 +30,21 @@ html,body {
 	.hidden{
 		display: none;
 	}
-}	
-	
+}
+
 #restauranttitle {
 }
 
 #restaurantinfo1 {
-	
+
 }
-	
+
 #restaurantinfo2 {
-	
+
 }
 
 #restaurantphoto {
-	
+
 }
 
 
@@ -72,14 +72,14 @@ html,body {
 }
 
 .leaflet-popup-content-wrapper {
-	
+
 	width: 100% !important;
 	line-height: 0;
 	text-align: center;
 	margin-top: -5px;
 	padding-left: 0;
 	padding-right: 0;
-	
+
 	.leaflet-popup-content {
 		color: black !important;
 		margin: 0 !important;
@@ -110,7 +110,7 @@ html,body {
 			margin-bottom: 50px;
 			margin-left: 5px
 		}
-		
+
 		.chairdailyoccupants {
 			background: #FFFFFF;
 			color: #000000;
@@ -137,13 +137,13 @@ html,body {
 			border-bottom-right-radius: 12px;
 			margin-bottom:5px
 		}
-		
+
 	}
-	
+
 }
 
 .leaflet-popup-close-button {
-	
+
 }
 
 .infopopupexterior .leaflet-popup-tip,
@@ -155,18 +155,18 @@ html,body {
 
 
 #timeSlider {
-	 //width:100%; 
+	 //width:100%;
 	 //height: 100%
 }
-	
+
 .slidecontainer {
-	width: 100%; 
-	//height: 30px; 
+	width: 100%;
+	//height: 30px;
 	display: block;
 	position:absolute;
 	bottom:25px;
 	left:5px;
-	
+
 	z-index:30;
 
 	.sliderWrapper {
@@ -182,9 +182,9 @@ html,body {
 
 		.mediaButtonsContainer {
 			display: inline-flex;
-		
+
 			.rewindContainer {
-		
+
 				.rewindButton {
 					border-radius: 15px;
 					background: #0D67AC;
@@ -194,9 +194,9 @@ html,body {
 					border: none;
 				}
 			}
-		
+
 			.playContainer {
-				
+
 				.playButton {
 					border-radius: 15px;
 					background: #0D67AC;
@@ -206,19 +206,8 @@ html,body {
 					border: none;
 					position: relative;
 					z-index: 2;
-					
 					overflow: hidden;
-					
-					&:before {
-						background: #000000;
-						z-index: 20;
-						border: 1px solid;
-						display: none;
-						width: 50%;
-						position: relative;
-						content: "";
-					}
-					
+
 					#loadingBar {
 						background: #5888ad;
 						/* border: 1px solid; */
@@ -230,19 +219,12 @@ html,body {
 						border-radius: 0;
 						top: 0;
 						left: 0;
-						content: "";
-					}
-					
-					&:hover:after {
-						visibility: visible;
-						opacity: 1;
-						width: 81%;
 					}
 				}
 			}
-		
+
 			.forwardContainer {
-				
+
 				.forwardButton {
 					border-radius: 15px;
 					background: #0D67AC;
@@ -265,7 +247,7 @@ html,body {
     width: 100%;
 	height: 100%;
     max-width: 100%;
-    
+
     #map {
         width: 100%;
         height: 100%;
@@ -279,7 +261,7 @@ html,body {
 	position: absolute;
 	top: 10px;
 	right: 10px;
-	
+
 	z-index: 30;
 
 	.slideViewToggle {
@@ -313,7 +295,7 @@ html,body {
 		.titleContainer {
 			display: table;
 			width: 100%;
-		
+
 			.Title {
 				margin-top: -10px;
 				background: #006CBF;
@@ -321,7 +303,7 @@ html,body {
 				height: 53px;
 				border-top-left-radius: 25px;
 				border-top-right-radius: 25px;
-				
+
 				display: table-cell;
 				vertical-align: middle;
 				text-align: center;
@@ -489,7 +471,7 @@ html,body {
 .track() {
   width: @track-width;
   height: @track-height;
- 
+
   cursor: pointer;
   animate: 0.2s;
 }
@@ -518,7 +500,7 @@ input[type=range] {
   &::-webkit-slider-runnable-track {
     .track();
   }
-  
+
   &::-webkit-slider-thumb {
     .thumb();
     -webkit-appearance: none;
@@ -531,14 +513,14 @@ input[type=range] {
 
   &::-moz-range-track {
     .track();
-    
+
   }
   &::-moz-range-thumb {
      .thumb();
   }
 
   &::-ms-track {
-    .track(); 
+    .track();
     background: transparent;
     border-color: transparent;
     border-width: @thumb-width 0;
@@ -554,7 +536,7 @@ input[type=range] {
     background: @track-color;
     border: @track-border-width solid @track-border-color;
     border-radius: @track-radius*2;
-    
+
   }
   &::-ms-thumb {
     .thumb();

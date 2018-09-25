@@ -3,7 +3,7 @@ var chairObjectsPerTimestamp;
 var searchInfo = [];
 
 exports.findTimeStamp = function(timestamp, chairPolys){
-  console.log(1)
+  console.log(timestamp);
     searchInfo = [];
     chairPolys.forEach((chairPoly) => {
 		//console.log("looping through polygons");

@@ -22,17 +22,41 @@ var half_hour;
     		}
 
     		//using the slider value i get which day it is
-			if (sliderValue >= -96 && sliderValue < -72)
+      if(sliderValue >= -144 && sliderValue < -120){
+        if(whole_hour<10)
+        {
+           //adds a leading zero to timestamp to correct format
+           var timeStamp = "2018-08-30 0" + whole_hour +":"+half_hour+":00";
+
+         }
+         else{
+           var timeStamp = "2018-08-30 " + whole_hour +":"+half_hour+":00";
+
+         }
+      }
+      else if(sliderValue >= -120 && sliderValue < -96){
+        if(whole_hour<10)
+       {
+          //adds a leading zero to timestamp to correct format
+          var timeStamp = "2018-08-31 0" + whole_hour +":"+half_hour+":00";
+
+        }
+        else{
+          var timeStamp = "2018-08-31 " + whole_hour +":"+half_hour+":00";
+
+        }
+      }
+      else if (sliderValue >= -96 && sliderValue < -72)
 			 {
 				 if(whole_hour<10)
 				 {
     		 		//adds a leading zero to timestamp to correct format
     		 		var timeStamp = "2018-09-01 0" + whole_hour +":"+half_hour+":00";
-    		 		console.log("timestamp calcauted  " + timeStamp);
+
     		 	}
     		 	else{
     		 		var timeStamp = "2018-09-01 " + whole_hour +":"+half_hour+":00";
-    		 		console.log("timestamp calcauted  " + timeStamp);
+
     		 	}
 			 }
 
@@ -42,11 +66,11 @@ var half_hour;
 				 {
     		 		//adds a leading zero to timestamp to correct format
     		 		var timeStamp = "2018-09-02 0" + whole_hour +":"+half_hour+":00";
-    		 		console.log("timestamp calcauted  " + timeStamp);
+
     		 	}
     		 	else{
     		 		var timeStamp = "2018-09-02 " + whole_hour +":"+half_hour+":00";
-    		 		console.log("timestamp calcauted  " + timeStamp);
+
     		 	}
 			 }
 
@@ -57,14 +81,14 @@ var half_hour;
     		 	{
     		 		//adds a leading zero to timestamp to correct format
     		 		var timeStamp = "2018-09-03 0" + whole_hour +":"+half_hour+":00";
-    		 		console.log("timestamp calcauted  " + timeStamp);
+
     		 	}else if(whole_hour === 24){
             var timeStamp = "2018-09-04 00" +":"+half_hour+":00";
-            console.log("timestamp calculated " + timeStamp);
+
           }
     		 	else{
     		 		var timeStamp = "2018-09-03 " + whole_hour +":"+half_hour+":00";
-    		 		console.log("timestamp calcauted  " + timeStamp);
+
     		 	}
 
     		 	// day3 time stamp needed
@@ -76,11 +100,9 @@ var half_hour;
     		 	if (whole_hour<10)
     		 	{
     		 		var timeStamp = "2018-09-04 0" + whole_hour +":"+half_hour+":00";
-    		 		console.log("timestamp calcauted  " + timeStamp);
     		 	}
     		 	else if (whole_hour>=10 && whole_hour < 24){
     		 		var timeStamp = "2018-09-04 " + whole_hour +":"+half_hour+":00";
-    		 		console.log("timestamp calcauted  " + timeStamp);
     		 	}
 
     		 }
