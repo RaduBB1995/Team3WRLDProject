@@ -391,6 +391,8 @@ function onExit(event) {
 	$("#sidebarButton").css("display","none");
 	$(".sideView").css("display","none");
 }
+
+
 $.fn.redraw = function(){
   $(this).each(function(){
     var redraw = this.offsetHeight;
@@ -574,11 +576,24 @@ $(".forwardButton").click(function(){
 $(".playButton").click(function() {
 	if(playClicked === false){
 		incrementSlider();
+		loadBar();
 		playClicked = true;
 		document.getElementById("playPause").classList.remove("fa-play");
 		document.getElementById("playPause").classList.add("fa-pause");
+		var barWidth = 1;
+		var progress = setInterval(barLoad, 50);
+		function barLoad() {
+			if(barWidth < 100){	
+				barWidth++;
+				$("#loadingBar").css("width",barWidth + "%");
+			}else if(barWidth === 100){
+				barWidth = 1;
+				$("#loadingBar").css("width",barWidth + "%");
+			}
+	}
 	}else{
 		stopIncrement();
+		clearInterval(progress);
 		playClicked = false;
 		document.getElementById("playPause").classList.add("fa-play");
 		document.getElementById("playPause").classList.remove("fa-pause");

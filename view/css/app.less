@@ -204,6 +204,40 @@ html,body {
 					width: 60px;
 					height: 30px;
 					border: none;
+					position: relative;
+					z-index: 2;
+					
+					overflow: hidden;
+					
+					&:before {
+						background: #000000;
+						z-index: 20;
+						border: 1px solid;
+						display: none;
+						width: 50%;
+						position: relative;
+						content: "";
+					}
+					
+					#loadingBar {
+						background: #5888ad;
+						/* border: 1px solid; */
+						display: block;
+						width: 1%;
+						z-index: -1;
+						position: absolute;
+						height: 100%;
+						border-radius: 0;
+						top: 0;
+						left: 0;
+						content: "";
+					}
+					
+					&:hover:after {
+						visibility: visible;
+						opacity: 1;
+						width: 81%;
+					}
 				}
 			}
 		
