@@ -65,7 +65,8 @@ let chairGroup = new L.featureGroup();
 //Add on clickevent for all layers in featureGroup
 chairGroup.on('click', function(e)
  {
-   console.log("Chair clicked");
+   console.log("Chair clicked: " + e.layer.options.label);
+   
    //e.layer.bindPopup("Chair #" + chairGroup.getLayerId(e.layer), {closeOnClick: false, autoClose:true, indoorMapId: 'westport_house', indoorMapFloorId: 0}).openPopup();
    //console.log("clicked on chair " + chairGroup.getLayerId(e.layer))
    //console.log("at: " + e.layer.getPopup().getLatLng());
@@ -116,7 +117,7 @@ window.addEventListener('load', async () => {
     		seatcolour = "#ffffff";
     	}
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
+      var polyChair = L.polygon(currentChair.geometry.coordinates, {label:currentChair.properties.chairID, color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
 																																				//+ Chair #" + currentChair.properties.chairID
 																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>"
 																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
@@ -428,10 +429,10 @@ function resetPolyColors(){
       console.log("Test");
   	}
 	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
+	 var polyChair = L.polygon(currentChair.geometry.coordinates, {label:currentChair.properties.chairID, color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
 																																				//+ Chair #" + currentChair.properties.chairID
 																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>"
-																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
+																																				+ "<h1 class='chairtitletext' style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
 																																				+ "</div>"
 																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>"
 																																				+ "Last Occupied: " + lastOccupied(currentChair)
