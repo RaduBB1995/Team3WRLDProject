@@ -83,7 +83,7 @@ html,body {
 	.leaflet-popup-content {
 		color: black !important;
 		margin: 0 !important;
-		margin-top: -17px !important;
+		margin-top: -21px !important;
 		display: block !important;
 		width: 100%;
 		left: 0 !important;
@@ -94,17 +94,28 @@ html,body {
 		border-top-right-radius: 12px;
 		border-radius: 25px !important;
 		padding-left:0 !important;
+
+		font-size: 8px !important;
+
+		.chairdiv {
+			font-size: 8px !important;
+		}
+
+		.leaflet-popup-tip-container {
+			font-size: 2px !important;
+		}
+
 		.chairtitle {
 			border-top-left-radius: 12px;
 			border-top-right-radius: 12px;
 			margin-top:16px;
-			margin-right:-1px
+			margin-right:-1px;
 		}
 		.chairlastoccupied  {
 			background: #FFFFFF;
 			color: #000000;
 			display: inline-block;
-			font-size: 9pt ;
+			font-size: 14px;
 			float: left;
 			margin-top: -10px;
 			margin-bottom: 50px;
@@ -116,7 +127,7 @@ html,body {
 			color: #000000;
 			display: inline-block;
 			float: right;
-			font-size: 9pt ;
+			font-size: 14px;
 			margin-top: -10px;
 			margin-bottom: 50px;
 			margin-right: 5px
@@ -125,14 +136,14 @@ html,body {
 		.chairoccupancygraph{
 			background: #FFFFFF;
 			color: #000000;
-			font-size: 9pt ;
+			font-size: 14px;
 			clear:both;
 		}
 
 		.chairoccupancy {
 			background: #FFFFFF;
 			color: #000000;
-			font-size: 9pt ;
+			font-size: 14px;
 			border-bottom-left-radius: 12px;
 			border-bottom-right-radius: 12px;
 			margin-bottom:5px
@@ -212,14 +223,33 @@ html,body {
 						background: #5888ad;
 						/* border: 1px solid; */
 						display: block;
-						width: 1%;
+						width: 0%;
 						z-index: -1;
 						position: absolute;
 						height: 100%;
 						border-radius: 0;
 						top: 0;
 						left: 0;
+
+						&.widen {
+							width: 100%;
+							-webkit-transition: width 5s;
+							-moz-transition: width 5s;
+							transition: width 5s;
+							-moz-transition-timing-function: linear;
+							-webkit-transition-timing-function: linear;
+							transition-timing-function: linear;
+						}
+
+						&.resetWidth {
+							width: 0%;
+							-webkit-transition: width 0s;
+							-moz-transition: width 0s;
+							transition: width 0s;
+						}
 					}
+
+
 				}
 			}
 
@@ -344,12 +374,118 @@ html,body {
 			}
 		}
 
-		.graph1Container {
+		.keyContainer {
+			width: 42%;
+			float: left;
+			display: block;
+			vertical-align: middle;
+			position: relative;
+			padding-top: 20px;
+			padding-left: 20px;
 
+
+			.key1Container {
+				width: 100%;
+				display:flex;
+				align-items:center;
+				padding-bottom: 5px;
+
+				.key1 {
+					background: #FF0000;
+					width: 20px;
+					height: 20px;
+					border-radius: 5px;
+					margin-right: 5px;
+				}
+
+				.keyText {
+					margin-bottom: 0;
+					font-size: 13px;
+				}
+			}
+
+			.key2Container {
+				width: 100%;
+				display:flex;
+				align-items:center;
+				padding-bottom: 5px;
+
+				.key2 {
+					background: #00FF50;
+					width: 20px;
+					height: 20px;
+					border-radius: 5px;
+					margin-right: 5px;
+				}
+
+				.keyText {
+					margin-bottom: 0;
+					height: 20px;
+					font-size: 13px;
+				}
+			}
+
+			.key3Container {
+				width: 100%;
+				display: flex;
+				align-items: center;
+				padding-bottom: 5px;
+
+				.key3 {
+					background: #FDF500;
+					width: 20px;
+					height: 20px;
+					border-radius: 5px;
+					margin-right: 5px;
+				}
+
+				.keyText {
+					display: inline-block;
+					margin-bottom: 0;
+					font-size: 13px;
+				}
+			}
+
+			.key4Container {
+				width: 100%;
+				display: flex;
+				align-items: center;
+
+				.key4 {
+					background: #d3d3d3;
+					width: 20px;
+					height: 20px;
+					border-radius: 5px;
+					margin-right: 5px;
+				}
+
+				.keyText {
+					display: inline-block;
+					margin-bottom: 0;
+					font-size: 13px;
+				}
+			}
+		}
+
+		.topWrapper {
+			width: 100%;
+			height: 155px;
+		}
+		.graph1Container {
+			width: 57%;
+			display: block;
+			float: right;
+			height: 150px;
+
+			.doughnutContainer {
+				padding-top: 26px;
+				display: block;
+				width: 100%;
+			}
 		}
 
 		.graph2Container {
-
+			
 		}
 	}
 }
@@ -580,4 +716,95 @@ text-align:center;
 		letter-spacing: 7px;
 		z-index: 50
 	}
+}
+
+
+////////////////////
+//CRAIG
+
+
+.graph {
+  //background-size: 16px 16px;
+  height: 130px;
+  position: relative;
+  width: 100%;
+	margin-left:78px;
+
+  & > div {
+    background-color: #000;
+    background-image: linear-gradient(rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%);
+    border-radius: 3px 3px 0 0;
+    bottom: 0;
+    cursor: pointer;
+    height: 0;
+    position: absolute;
+    transition: background-image 1s ease-out, opacity .3s ease-out;
+    width: 3.33333333%;
+
+    &:hover {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, .25) 0%, rgba(255,255,255,.1) 33%, rgba(255, 255, 255, .1) 66%, rgba(255, 255, 255, .25) 100%);
+      opacity: 1 !important;
+    }
+  }
+
+  &.average > div {
+    background-color: #2B96D1;
+  }
+}
+
+.transition-selection,
+.source-selection {
+  background-color: rgba(0, 0, 0, .125);
+  margin-bottom: 1em;
+  padding: 1em;
+}
+
+.source-selection {
+  button + label,
+  label + label {
+    margin-left: 1em;
+  }
+}
+
+.transition-selection {
+  margin-top: 3em;
+  label {
+    display: block;
+
+    & + label {
+      margin-top: .5em;
+    }
+  }
+  p {
+    margin: 0 0 .5em;
+  }
+}
+
+
+.barXInfo{
+	margin-left: 78px;
+	font-size: 10pt;
+	font-family: "Arimo";
+	color: #7c7c7c;
+}
+
+.leftP{
+	width: 20px;
+    margin-top: 0px;
+    display: inline-block;
+    margin-right: 36px;
+    margin-left: 2px;
+}
+
+.middleP{
+	width: 20px;
+		margin-top: 0px;
+		display: inline-block;
+		margin-right: 26px;
+}
+
+.rightP{
+	width: 20px;
+		margin-top: 0px;
+		display: inline-block;
 }

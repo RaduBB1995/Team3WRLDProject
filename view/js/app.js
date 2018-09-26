@@ -50,6 +50,14 @@ var twoYTimeOcc = 0;
 var uoArray = [];
 var yuoArray = [];
 
+var chairOccCount = 0;
+var chairYOccCount = 0;
+var chairYYOccCount = 0;
+
+var chairYCurrArr = [];
+var chairYYCurrArr = [];
+
+var chairArray = [];
 const keys = {
   wrld: env.WRLD_KEY,
 };
@@ -68,11 +76,16 @@ let chairGroup = new L.featureGroup();
 //Add on clickevent for all layers in featureGroup
 chairGroup.on('click', function(e)
  {
-   console.log("Chair clicked");
-   //e.layer.bindPopup("Chair #" + chairGroup.getLayerId(e.layer), {closeOnClick: false, autoClose:true, indoorMapId: 'westport_house', indoorMapFloorId: 0}).openPopup();
-   //console.log("clicked on chair " + chairGroup.getLayerId(e.layer))
-   //console.log("at: " + e.layer.getPopup().getLatLng());
-   map.setView(e.layer.getPopup().getLatLng(), 21.35, {animate:true});
+	
+    console.log("Chair clicked: " + e.layer.options.label);
+    //e.layer.bindPopup("Chair #" + chairGroup.getLayerId(e.layer), {closeOnClick: false, autoClose:true, indoorMapId: 'westport_house', indoorMapFloorId: 0}).openPopup();
+    //console.log("clicked on chair " + chairGroup.getLayerId(e.layer))
+    //console.log("at: " + e.layer.getPopup().getLatLng());
+    map.setView(e.layer.getPopup().getLatLng(), 21.35, {animate:true});
+	populateChairChart(e.layer.options.label);
+	createChairArray();
+	DrawChairChart();
+	e.layer.setContent();
 }
 );
 //Events for page onLoad
@@ -118,26 +131,28 @@ window.addEventListener('load', async () => {
       }else if(currentChair.properties.status === "closed"){
     		seatcolour = "#ffffff";
     	}
+
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-      var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
-																																				//+ Chair #" + currentChair.properties.chairID
-																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>"
-																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
-																																				+ "</div>"
-																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>"
-																																				+ "Last Occupied: " + lastOccupied(currentChair)
-																																				+ "</div>"
-																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>"
-																																				+ "Occupants Today: " + occupantsToday(currentChair)
-																																				+ "</div>"
-																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>"
-																																				+ "Occupancy graph here"
-																																				+ "</div>"
-																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>"
-																																				+ "Status: " + chairStatus(currentChair)
-																																				+ "</div>"
-																																				+ "</div>",
-																																				{closeOnClick: true,
+      var polyChair = L.polygon(currentChair.geometry.coordinates, {label: currentChair.properties.chairID, color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">\
+																																				<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>\
+																																				<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>\
+																																				</div>\
+																																				<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>\
+																																				Last Occupied: " + lastOccupied(currentChair) + "\
+																																				</div>\
+																																				<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>\
+																																				Occupants Today: " + occupantsToday(currentChair) + "\
+																																				</div>\
+																																				<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>\
+																																				<div id='mydiv3' style='margin-left:10px;'>\
+																																				<canvas style='clear:both; position: relative;' id='myChart3'></canvas>\
+																																				</div>\
+																																				</div>\
+																																				<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>\
+																																				Status: " + chairStatus(currentChair) + "\
+																																				</div>\
+																																				</div>",
+																																				{closeOnClick: false,
 																																				autoClose:true,
 																																				indoorMapId: 'westport_house',
 																																				indoorMapFloorId: 0})
@@ -153,8 +168,16 @@ window.addEventListener('load', async () => {
       //Needed for Chart.js on load
 			resetPolyColors();
   });
+  //barChart();
   time();
   const indoorControl = new WrldIndoorControl('widget-container', map);
+  DrawChairChart();
+	//DrawChart();
+	chairGroup.eachLayer(
+		function(layer){
+			layer.setContent()
+		}
+	);
   });
 
 
@@ -180,7 +203,7 @@ window.onload = function() {
 buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant</h2></div>\
 <div id='restaurantinfo'>\
 	<div id='restaurantinfo1'>\
-		<div id='mydiv2' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart2'></canvas></div>\
+	<div id='mydiv2' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart2'></canvas></div>\
 	<div id='restaurantinfo2'><p>Seats available here</p></div>\
 	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
@@ -222,7 +245,7 @@ function populateRestaurantChart(){
   onehalfTimeDBArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 1.5,(dayAdjusted - 24)),chairPolys);
   twoTimeDBArray = findTimeStamp(get_Tstamp.calculate_Tstamp(hour - 2,(dayAdjusted - 24)),chairPolys);
 
- //Get total occupancy at current time going  backwards 4 incremnts
+  //Get total occupancy at current time going  backwards 4 incremnts
  actualChairInfo.forEach((currInstance) =>{
    if(currInstance.properties.status === "occupied"){
      currOccupancy += 1;
@@ -275,9 +298,39 @@ function populateRestaurantChart(){
        twoYTimeOcc += 1;
      }
  });
-
+  //barChart();
 }
 
+function populateChairChart(chairID){
+  chairOccCount = 0;
+  chairYOccCount = 0;
+  chairYYOccCount = 0;
+
+  chairYCurrArr = findTimeStamp(get_Tstamp.calculate_Tstamp(hour ,(dayAdjusted - 24)),chairPolys);
+  chairYYCurrArr = findTimeStamp(get_Tstamp.calculate_Tstamp(hour,(dayAdjusted - 48)), chairPolys);
+
+  actualChairInfo.forEach((currChairInfo) =>{
+    if(currChairInfo.properties.chairID === chairID){
+      chairOccCount = currChairInfo.properties.UniqueOccupants;
+    }
+  });
+
+  chairYCurrArr.forEach((currYChairInfo)=>{
+    if(currYChairInfo.properties.chairID === chairID){
+      chairYOccCount = currYChairInfo.properties.UniqueOccupants;
+    }
+  });
+
+  chairYYCurrArr.forEach((currYYChairInfo)=>{
+    if(currYYChairInfo.properties.chairID === chairID){
+      chairYYOccCount = currYYChairInfo.properties.UniqueOccupants;
+    }
+  });
+
+  console.log(chairOccCount);
+  console.log(chairYOccCount);
+  console.log(chairYYOccCount);
+}
 
 function sliderToHour() {
 	//assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
@@ -331,7 +384,6 @@ function sliderToHour() {
 
 }
 
-
 function updateChart(myDoughnutChart, chairDoughnutData)
 {
 	myDoughnutChart.data.datasets.forEach((dataset) =>{
@@ -339,15 +391,6 @@ function updateChart(myDoughnutChart, chairDoughnutData)
 		console.log("push occuried");
 	});
 	myDoughnutChart.update();
-}
-
-function updateStackedChart(myChart2, chairDoughnutData)
-{
-myChart2.data.datasets.forEach((dataset) =>{
-		dataset.data.push(chairDoughnutData);
-		console.log("push occuried");
-	});
-	myChart2.update();
 }
 function updateBarChart(myChart, uoArray)
 {
@@ -357,27 +400,45 @@ function updateBarChart(myChart, uoArray)
 	});
 	myChart.update();
 }
+function updateChairChart(myChart3, chairArray)
+{
+	myChart3.data.datasets.forEach((dataset) =>{
+		dataset.data.push(chairArray);
+		console.log("push occuried");
+	});
+	myChart3.update();
+}
+
 var doughnutO = 0;
 var doughnutNO = 0;
 var doughnutNC = 0;
+var doughnutC = 0;
 
 
 function createDoughnutDataArray(){
 	chairDoughnutData[0] = doughnutO;
 	chairDoughnutData[1] = doughnutNO;
 	chairDoughnutData[2] = doughnutNC;
+	chairDoughnutData[3] = doughnutC;
 }
+
 function createBarDataArray(){
 		uoArray[4] = currOccupancy;
 		uoArray[3] = halfTimeOcc;
 		uoArray[2] = oneTimeOcc;
 		uoArray[1] = oneHalfTimeOcc;
 		uoArray[0] = twoTimeOcc;
-		//yuoArray[4] = currYOccupancy;
+		yuoArray[4] = currYOccupancy;
 		yuoArray[3] = halfYTimeOcc;
 		yuoArray[2] = oneYTimeOcc;
 		yuoArray[1] = oneHalfYTimeOcc;
 		yuoArray[0] = twoYTimeOcc;
+}
+function createChairArray(){
+	chairArray[0] = chairOccCount;
+	chairArray[1] = chairYOccCount;
+	chairArray[2] = chairYYOccCount;
+	//chairArray[3] = doughnutC;
 }
 function getColour(chair){
 	if(chair.properties.status === "occupied"){
@@ -430,6 +491,7 @@ function resetPolyColors(){
 	doughnutO = 0;
 	doughnutNO = 0;
 	doughnutNC = 0;
+	doughnutC = 0;
 	chairGroup.eachLayer(
 		function(layer){
 		 map.removeLayer(layer)
@@ -446,33 +508,35 @@ function resetPolyColors(){
 			seatcolour = "#00f272";
 			doughnutNC += 1;
 		}else if(currentChair.properties.status === "closed"){
-  		seatcolour = "#ffffff";
-      doughnutO +=1;
+  			seatcolour = "#ffffff";
+     	 doughnutC +=1;
       console.log("Test");
   	}
 	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
-	 var polyChair = L.polygon(currentChair.geometry.coordinates, {color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
-																																				//+ Chair #" + currentChair.properties.chairID
-																																				+ "<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>"
-																																				+ "<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>"
-																																				+ "</div>"
-																																				+ "<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>"
-																																				+ "Last Occupied: " + lastOccupied(currentChair)
-																																				+ "</div>"
-																																				+ "<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>"
-																																				+ "Occupants Today: " + occupantsToday(currentChair)
-																																				+ "</div>"
-																																				+ "<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>"
-																																				+ "Occupancy graph here"
-																																				+ "</div>"
-																																				+ "<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>"
-																																				+ "Status: " + chairStatus(currentChair)
-																																				+ "</div>"
-																																				+ "</div>",
-																																				{closeOnClick: true,
+	var polyChair = L.polygon(currentChair.geometry.coordinates, {label: currentChair.properties.chairID, color : seatcolour,indoorMapId: "westport_house",indoorMapFloorId: 0}).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">\
+																																				<div class='chairtitle' id=" + currentChair.properties.chairID +"title style='background-color: " + getColour(currentChair) + "'>\
+																																				<h1 style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>\
+																																				</div>\
+																																				<div class='chairlastoccupied' id=" + currentChair.properties.chairID +"lastoccupied>\
+																																				Last Occupied: " + lastOccupied(currentChair) + "\
+																																				</div>\
+																																				<div class='chairdailyoccupants' id=" + currentChair.properties.chairID +"dailyoccupants>\
+																																				Occupants Today: " + occupantsToday(currentChair) + "\
+																																				</div>\
+																																				<div class='chairoccupancygraph' id=" + currentChair.properties.chairID +"occupancygraph>\
+																																				<div id='mydiv3' style='margin-left:10px;'>\
+																																				<canvas style='clear:both; position: relative;' id='myChart3'></canvas>\
+																																				</div>\
+																																				</div>\
+																																				<div class='chairoccupancy' id=" + currentChair.properties.chairID +"occupancy>\
+																																				Status: " + chairStatus(currentChair) + "\
+																																				</div>\
+																																				</div>",
+																																				{closeOnClick: false,
 																																				autoClose:true,
 																																				indoorMapId: 'westport_house',
 																																				indoorMapFloorId: 0})
+																																				.addTo(map);
 //add created variable to featureGroup
 chairGroup.addLayer(polyChair);
 //add polygon to map
@@ -485,10 +549,18 @@ chairGroup.addLayer(polyChair);
 
 		createDoughnutDataArray();
 		createBarDataArray();
+		createChairArray();
 		updateBarChart(myChart, uoArray);
-		updateStackedChart(myChart2, chairDoughnutData);
-		DrawChart();
+		//updateChairChart(myChart3, chairArray);
+		//updateStackedChart(myChart2, chairDoughnutData);
 		updateChart(myDoughnutChart, chairDoughnutData);
+		DrawChairChart();
+		DrawChart();
+		chairGroup.eachLayer(
+			function(layer){
+				layer.setContent()
+			}
+			);
 }
 
 function checkValue(event) {
@@ -581,24 +653,37 @@ var myDoughnutChart = new Chart(ctx, {
 			backgroundColor: [
 				'#ff0a1e',
 				'#f3e658',
-				'#1df460'
-
+				'#1df460',
+				'#d3d3d3'
 			]
 		}],
-
-		// These labels appear in the legend and in the tooltips when hovering different arcs
 		labels: [
-			'Unavailable',
-			'To Be Cleared',
-			'Available'
-
+			'Occupied',
+			'Available',
+			'Now Available',
+			'Unavailable'
 		]
-	}
+	},
+	options: {
+        legend: {
+            display: false,
+        },
+    },
 });
 //increment slider when play button is clicked
 function incrementSlider(){
 	console.log("Beginning increment function");
 	sliderIncrement = setInterval(function(){
+		$("#loadingBar").toggleClass('widen');
+		$("#loadingBar").css('transition','width 0');
+		$("#loadingBar").css('-webkit-transition','width 0');
+		$("#loadingBar").css('-moz-transition','width 0');
+		$("#loadingBar").css('width','0');
+		$("#loadingBar").css('width','');
+		$("#loadingBar").css('transition','');
+		$("#loadingBar").css('-webkit-transition','');
+		$("#loadingBar").css('-moz-transition','');
+		$("#loadingBar").toggleClass('widen');
 			if($('#timeSlider').val() != 0){
 			console.log("Incrementing slider by 0.5");
 			var newSlide = -Math.abs($('#timeSlider').val()) + 0.5;
@@ -714,29 +799,29 @@ $(".forwardButton").click(function(){
 });
 
 $(".playButton").click(function() {
+
 	if(playClicked === false){
+		$("#loadingBar").toggleClass('resetWidth');
+		$("#loadingBar").toggleClass('widen');
+
 		incrementSlider();
-		loadBar();
-		playClicked = true;
+
+
 		document.getElementById("playPause").classList.remove("fa-play");
 		document.getElementById("playPause").classList.add("fa-pause");
-		var barWidth = 1;
-		var progress = setInterval(barLoad, 50);
-		function barLoad() {
-			if(barWidth < 100){
-				barWidth++;
-				$("#loadingBar").css("width",barWidth + "%");
-			}else if(barWidth === 100){
-				barWidth = 1;
-				$("#loadingBar").css("width",barWidth + "%");
-			}
+
+		playClicked = true;
 	}
-	}else{
+	else {
+		$("#loadingBar").toggleClass('widen');
+		$("#loadingBar").toggleClass('resetWidth');
+
 		stopIncrement();
-		clearInterval(progress);
+		//clearInterval(progress);
 		playClicked = false;
 		document.getElementById("playPause").classList.add("fa-play");
 		document.getElementById("playPause").classList.remove("fa-pause");
+		playClicked = false;
 	}
 });
 
@@ -749,12 +834,416 @@ function time(){
 	$("#clock").html(timeFromTimeStamp);
 }
 
+
+function barChart() {
+	'use strict';
+
+	var scores = [],
+	    bars = [],
+	    graph = document.getElementById('bar-graph'),
+	    selectedCategory = 'average',
+	    classToClear,
+	    vendors = ['webkit', 'moz', 'ms'],
+	    NO_TRANSITIONS = 'no-transitions',
+	    transitionEndEvent,
+	    barTransitionTime = 0.5,
+	    barDelayTime = 0.05,
+	    barDrawEffect,
+	    easingEffect = 'linear',
+	    durationInput;
+
+	/* ====================================================================== *\
+	   ==                          HELPER METHODS                          ==
+	\* ====================================================================== */
+	/**
+	* Creates a mock datasource for the graph.
+	*/
+	function createDataSource() {
+		// Determine the number of data points to generate, this will be a
+		// number between 1 and 30 (inclusive)
+		var count = 5;
+		scores = [];
+    scores.push(twoTimeOcc);
+    scores.push(oneHalfTimeOcc);
+    scores.push(oneTimeOcc);
+    scores.push(halfTimeOcc);
+    scores.push(currOccupancy);
+    console.log("ASDASDJASJKDAJSDJLASJLDJKLASD");
+    console.log(scores);
+		}
+
+
+	/**
+	* This method sets a CSS property. It will set the standard property as
+	* well as vender prefixed versions of the property.
+	*
+	* @param {HTMLElement} element  The element whose property to set
+	* @param {string} property      The unprefixed name of the property
+	* @param {string} value         The value to assign to the property
+	*/
+	function setPrefixedProperty(element, property, value) {
+		// Capitalize the first letter in the string
+		var capitalizedProperty = property[0].toUpperCase() + property.slice(1);
+		// Loop over the vendors and set the prefixex property
+		for (var index = 0, ubound = vendors.length; index < ubound; index++) {
+			element.style[vendors[index] + capitalizedProperty] = value;
+		}
+		// Set the standard property
+		element.style[property] = value;
+	}
+
+	/**
+	* This method tries to determine the name of the transitionend event, it
+	* could be the user's browser is using a prefixed version
+	*/
+	function transitionEndEventName() {
+		// 1: The variable we use to keep track of the current key when
+		//    iterating over the transitions object
+		// 2: An element we can use to test if a CSS property if known to the
+		//    browser
+		// 3: The key:value pairs represent CSS-property:Event-name values. By
+		//    testing if the browser supports a CSS property we can tell what
+		//    name to use for the transitionend event
+		var key,                                                       /* [1] */
+		    el = document.createElement('div'),                        /* [2] */
+		    transitions = {                                            /* [3] */
+			    WebkitTransition : 'webkitTransitionEnd',
+			    OTransition      : 'otransitionend',  // oTransitionEnd in very old Opera
+			    MozTransition    : 'transitionend',
+			    transition       : 'transitionend'
+		    };
+
+		// Loop over the keys in the transition object
+		for (key in transitions) {
+			// Check the key is a property of the object and check if the CSS
+			// property does not return undefined. If the result is undefined it
+			// means the browser doesn't recognize the (un)prefixed property
+			if (transitions.hasOwnProperty(key) && el.style[key] !== undefined) {
+				// The CSS property exists, this means we know which name of the
+				// transitionend event we can use for this browser
+				return transitions[key];
+			}
+		}
+
+		// If the method reaches this line it means that none of the CSS
+		// properties were recognized by the browser. It is safe to conclude
+		// there is no support for transitions (or at least none that we can use
+		// in any meaningful way)
+		return NO_TRANSITIONS;
+	}
+	/* ==========================  HELPER METHODS  ========================== */
+
+
+
+	/* ====================================================================== *\
+	   ==                         EVENT HANDLERS                           ==
+	\* ====================================================================== */
+
+	/**
+	* This method handles the transition end event fired when the last bar has
+	* been removed from the graph. It is the cue to redraw the graph.
+	*/
+	function onClearGraphEnded(event) {
+		// Remove the event listener, we no longer need it
+		bars[0].removeEventListener(transitionEndEvent, onClearGraphEnded);
+		// Wait 300ms before redrawing the graph, this has a nicer effect to it
+		// than redrawing it immediately.
+		setTimeout(drawGraph, 300);
+	}
+
+	/**
+	* This method handles the change event of the input which the user can use
+	* to set the duration for a bar to transition from 0 to 10.
+	*/
+	function onDurationChange(event) {
+		// Try to parse the value to a float
+		barTransitionTime = parseFloat(durationInput.value);
+		// Check if the value could be parsed
+		if (isNaN(barTransitionTime)) {
+			// Invalid value, set to the default value
+			barTransitionTime = 1;
+			durationInput.value = 1;
+		} else if (barTransitionTime < parseFloat(durationInput.getAttribute('min'))) {
+			barTransitionTime = durationInput.value = parseFloat(durationInput.getAttribute('min'));
+		} else if (barTransitionTime > parseFloat(durationInput.getAttribute('max'))) {
+			barTransitionTime = durationInput.value = parseFloat(durationInput.getAttribute('max'));
+		}
+		drawGraph();
+	}
+
+	/**
+	* This method handles the change in the selected easing method.
+	*/
+	function onEasingSelect(event) {
+		// Copy the selected value for easy usage
+		easingEffect = event.target.value;
+		// Redraw the graph using the selected easing method
+		drawGraph();
+	}
+
+	/**
+	 * This method handles the click on the button to refresh the graph. It will
+	 * generate a new data source and refresh the graph so this source is shown.
+	 */
+	function onRefreshGraph() {
+		createDataSource();
+		redrawGraph();
+	}
+
+	/**
+	* This method handles the change in the selected transition style
+	*/
+	function onTransitionSelectHandler(event) {
+		// Copy the selected value for easy usage
+		barDrawEffect = event.target.value;
+		// Redraw the graph using the selected easing method
+		drawGraph();
+	}
+
+	/**
+	* This method handels the change in the category to display in the graph.
+	* @param {[type]} event [description]
+	*/
+	function onOptionSelectHandler(event) {
+		// Make sure the selected option wasn't already selected
+		if (event.target.value !== selectedCategory) {
+			// The old class needs to be removed when redrawing the graph,
+			// remember which category was selected
+			classToClear = selectedCategory;
+			// Set the category to show
+			selectedCategory = event.target.value;
+			// Clear the graph, this in turn will redraw the graph and it will
+			// do so with the selected category
+			redrawGraph();
+		}
+	}
+	/* ==========================  EVENT HANDLERS  ========================== */
+
+	function drawGraph() {
+		// Check if we have the element to show the graph in, if not there is no
+		// need to continue
+		if (graph == null) {
+			return;
+		}
+
+		// Make sure all existing elements are removed from the graph before we
+		// continue.
+		while (graph.firstChild) {
+			graph.removeChild(graph.firstChild);
+		}
+
+		// A bar in the graph can only be as tall as the graph itself
+		var maxHeight = graph.clientHeight;
+		// Reset the array with references to the bars
+		bars = [];
+
+		// Check if there is a class to clear, this is the case when the visitor
+		// has switched between the categories to show in the graph
+		if (classToClear !== '') {
+			// Remove the class
+			graph.classList.remove(classToClear);
+			// Reset the class to clear
+			classToClear = '';
+			// Apply the class for the selected category
+			graph.classList.add(selectedCategory);
+		}
+
+		// Loop over all generated data points
+		for (var index = 0, ubound = scores.length; index < ubound; index++) {
+			// 1: Create an element to represent the current data point
+			// 2: Calculate how long it should take the bar to reach the height
+			//    necessary to show the score represented by the bar. A score of
+			//    10 would take the full transition time, lower scores use a
+			//    percentage of that time. We can determine the percentage by
+			//    dividing the score by 10.
+			// 3: Initialize the delay time for the bar
+			var bar = document.createElement('div'),                                      /* [1] */
+ 			   duration = (scores[index] / 14) * barTransitionTime,    /* [2] */
+			    delay = 0;                                                                /* [3] */
+
+			// Check if the effect is height or combined
+			if (barDrawEffect === 'height' || barDrawEffect === 'combined') {
+				// No need to correct for anything, the duration we calculated
+				// is already taking care that the shorter bars are shown
+				// quicker than the larger bars. This is already the effect we
+				// wanted
+				delay += 0;
+			}
+			// Check if the effect is wave or combined
+			if (barDrawEffect === 'wave' || barDrawEffect === 'combined') {
+				// Each bar should wait a little longer than the bar before it
+				// before it starts to animate to its desired height
+				delay += barDelayTime * index;
+			}
+			// Specify the unit for the delay time, in this case it is seconds
+			delay += 's';
+
+			// Set the width, this is 3%. For the left position we use 3 1/3
+			// which will create a nice gap in between bars
+			bar.style.width = '8%';
+			// Calculate the left position, this is simply the total width per
+			// bar multiplied by its index
+			bar.style.left = (10 * index) + '%';
+			// The opacity is determined by the percentage of team members who
+			// entered a score for tha day
+			bar.style.opacity = 1;
+			// Set the title attribute to show some information when the user
+			// hovers the mouse over the bar
+			// Set an attribute to remember the time we set for this bar to
+			// transition to its specified height. We will need this information
+			// when removing the bars. Storing it in an attribute is easier than
+			// recalculating it later
+			bar.setAttribute('data-duration', duration);
+			// Set the transition property, we need to use the duration we've
+			// calculated and the easing effect selected by the user
+			setPrefixedProperty(bar, 'transition', 'height ' + duration + 's ' + easingEffect + ', background-image .3s ease-out, opacity .3s ease-out');
+			// Set the transition delays, only the delay for the height
+			// transition is variable, the others are fixed
+			setPrefixedProperty(bar, 'transitionDelay', delay + ', 0, 0');
+			// Place a reference to the bar in the array, this way we can easily
+			// manipulate them later on
+      if(index === 4){
+        console.log("change color");
+        bar.style.backgroundColor = '#ffafaf';
+      }
+			bars.push(bar);
+			// Place the bar in the graph
+			graph.appendChild(bar);
+		}
+
+		// We will set a timeout of 10ms before we set the height for the bars
+		// to their desired height. We need to wait a little while or else the
+		// transition won't trigger.
+		setTimeout(function() {
+			// We know how many bars there are, we need to loop over all of them
+			for (index = 0; index < ubound; index++) {
+				// Set the height of the bar to show the score it represents
+				bars[index].style.height = (maxHeight * (scores[index] / 55)) + 'px';
+			}
+		}, 10);
+	}
+
+	/**
+	* Removes all the bars from the graph and repopulates the graph with the
+	* same datasource
+	*/
+	function redrawleft() {
+		var ubound = bars.length - 1,
+		index = ubound;
+
+		if (transitionEndEvent !== NO_TRANSITIONS) {
+			// Listen to the transition end event of the first bar in the graph,
+			// this the bar which will be removed from the view as last and once
+			// it has been removed it is time to redraw the graph
+			bars[0].addEventListener(transitionEndEvent, onClearGraphEnded);
+		}
+
+		// Loop over all the bars in the graph from the last item to the first
+		// item and set the delay. The bar representing the most recent
+		// measurement will be removed first.
+		for (; index >= 0; index--) {
+			var delay = 0;
+			// Calculate the delay for the bar before it is removed from view.
+			// 1: We know in what time the bar was shown through the
+			//    data-duration attribute. By substracting this value from 1 we
+			//    can let the shorter bars wait longer to remove themselves than
+			//    the longer bars. It will have the visual effect of the shorter
+			//    bars waiting until the longer bars have caught up to their
+			//    position
+			// 2: By adding an additional wait time per bar based on how many
+			//    bars came before it we introduce a sort of wave effect. The
+			//    first bar in the graph will start its removal later than the
+			//    bar representing the most recent date
+			// 3: Now all the is left to do is specifying the unit, in this case
+			//    the delay is specified in seconds
+			if (barDrawEffect === 'height' || barDrawEffect === 'combined') {
+				delay += (barTransitionTime - parseFloat(bars[index].getAttribute('data-duration')));   /* [1] */
+			}
+			if (barDrawEffect === 'wave' || barDrawEffect === 'combined') {
+				delay += (barDelayTime * (ubound - index));                                             /* [2] */
+			}
+			delay += 's';                                                                               /* [3] */
+			// Set the transition delay to what we've calculated
+			setPrefixedProperty(bars[index], 'transitionDelay', delay);
+			// Set the height of the bar to 0 to remove it from view
+			bars[index].style.height = 0;
+		}
+	}
+
+	function init() {
+		// Determine the transition end event name
+		transitionEndEvent = transitionEndEventName();
+
+		// Get the refresh button and attach a click handler so we know when to
+		// refresh the graph
+		var element = document.getElementById('btnRefresh');
+		if (element != null) {
+			element.addEventListener('click', onRefreshGraph);
+		}
+
+		// Get the element where to user can specify the time it should take a
+		// bar to go from 0 to 10 and attach a change handler so we know when
+		// this value has changed
+		durationInput = document.getElementById('input-duration');
+		if (durationInput != null) {
+			durationInput.addEventListener('change', onDurationChange);
+		}
+
+		// Get the element where the user can specify which easing method to use
+		// when manipulating the height of the bars. Attach a change hanlder so
+		// we know when the user has selected a different easing method
+		element = document.getElementById('select-easing');
+		if (element != null) {
+			element.addEventListener('change', onEasingSelect);
+		}
+
+		// Get all the inputs belonging the the group to change which category
+		// is shown in the graph. Attach click handlers so we know when we need
+		// to show a different category
+		var options = document.getElementsByName('score-select');
+		for (var index = 0, ubound = options.length; index < ubound; index++) {
+			options[index].addEventListener('click', onOptionSelectHandler);
+		}
+
+		// Get all the input elements belonging to the group to change which
+		// effect is used when drawing the graph. Attach click handlers so we
+		// know when we need to use a different effect
+		options = document.getElementsByName('transition-select');
+		for (index = 0, ubound = options.length; index < ubound; index++) {
+			options[index].addEventListener('click', onTransitionSelectHandler);
+			if (options[index].checked) {
+				barDrawEffect = options[index].value;
+			}
+		}
+
+		// Create a data source
+		createDataSource();
+		// Draw a graph for the created data source
+		drawGraph();
+	}
+
+	init();
+};
 var ctx2 = document.getElementById("myChart").getContext('2d');
 var myChart = new Chart(ctx2, {
     type: 'bar',
   data: {
 		datasets: [{
-			label: 'Today',
+			label: 'Yesterday',
+          data: yuoArray,
+		backgroundColor: [
+			'rgba(32, 252, 241, 0.5)',
+				'rgba(32, 252, 241, 0.5)',
+				'rgba(32, 252, 241, 0.5)',
+				'rgba(32, 252, 241, 0.5)',
+				'rgba(32, 252, 241, 0.5)'
+
+
+			],
+			 xAxesID: "bar-x-axis1"
+		},
+		{
+          label: 'Today',
 			data: uoArray,
 			backgroundColor: [
 			'rgba(0, 110, 244, 0.50)',
@@ -763,31 +1252,17 @@ var myChart = new Chart(ctx2, {
 				'rgba(0, 110, 244, 0.50)',
 				'rgba(244, 0, 0, 0.50)'
 			],
-			 xAxesID: "bar-x-axis1"
-		},
-		{
-          label: 'Yesterday',
-          data: yuoArray,
-		backgroundColor: [
-			'rgba(0, 110, 244, 0.50)',
-				'rgba(0, 110, 244, 0.50)',
-				'rgba(0, 110, 244, 0.50)',
-				'rgba(0, 110, 244, 0.50)',
-				'rgba(244, 0, 0, 0.50)'
 
-
-			],
-          // Changes this dataset to become a line
           type: 'bar',
 		  xAxesID: 'bar-x-axis2'
         }],
 
 		// These labels appear in the legend and in the tooltips when hovering different arcs
 		labels: [
-			'2hrs Ago',
-			'1.5hrs Ago',
-			'1hr Ago',
-			'.5hrs Ago',
+			'2hrs',
+			'1.5hrs',
+			'1hr',
+			'.5hrs',
 			'Current'
 
 		]
@@ -795,9 +1270,9 @@ var myChart = new Chart(ctx2, {
 	options: {
   scales: {
     xAxes: [{
-      stacked: true,
+      stacked: false,
       id: "bar-x-axis1",
-      barThickness: 30,
+      barThickness: 15,
 	  gridLines: {
         offsetGridLines: true,
 		drawOnChartArea: false
@@ -833,46 +1308,35 @@ var myChart = new Chart(ctx2, {
 })
 
 
-var ctx3 = document.getElementById("myChart2").getContext('2d');
-var myChart2 = new Chart(ctx3, {
-    type: 'horizontalBar',
-    data: {
-        labels: ['Avialability'],
-        datasets: [{
-            //label: '# of Votes',
-            data: [doughnutO],
-            backgroundColor: [
-              'rgba(255, 40, 40, 0.49)'
-            ],
-			label: ["Unavailable"]
-        },
-		{
-			 data: [doughnutNC],
-            backgroundColor: [
-                'rgba(218, 204, 5, 0.5)'
-            ],
-			label: ["To be Cleared"]
-		},
-		{
-			 data: [doughnutNO],
-            backgroundColor: [
-				'rgba(19, 218, 5, 0.5)'
-            ],
-			label: ["Available"]
-		}
+
+function DrawChairChart(){
+	var ctx4 = document.getElementById("myChart3").getContext('2d');
+	var myChart3 = new Chart(ctx4, {
+    type: 'bar',
+  data: {
+		datasets: [{
+			data: chairArray,
+			backgroundColor: [
+				'#ff0a1e',
+				'#f3e658',
+				'#1df460'
+			]
+		}],
+		labels: [
+			'Occupied',
+			'Available',
+			'Now Available'
 		]
-    },
+	},
 	options: {
-        scales: {
-            xAxes: [{
-                stacked: true
-            }],
-            yAxes: [{
-                stacked: true
-            }]
-        }
+        legend: {
+            display: false,
+        },
     }
 })
+
+}
+
 
 function DrawChart(){
 var ctx3 = document.getElementById("myChart2").getContext('2d');
@@ -920,5 +1384,3 @@ buildingPoly.on("click", (event, MouseEvent) => {
 DrawChart();
 })
  
-
-

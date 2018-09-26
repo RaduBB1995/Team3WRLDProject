@@ -5,13 +5,14 @@
 		<meta charset="utf-8" />
 		<link rel="stylesheet" href="../css/app.less" />
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-		<title>Getting started with WRLD</title>
+		<title>SeatWrld</title>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 		<script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/latest/indoor_control.js"></script>
 
 	</head>
 	<body>
+	
 		<div id="widget-container" class="wrld-widget-container"></div>
 		<div class="customUIContainer">
 
@@ -40,12 +41,37 @@
 							</p>
 						</div>
 					</div>
-					<div class="graph1Container">
-							<canvas id="myDoughnutChart"></canvas>
+
+					<div class="topWrapper">
+						<div class="keyContainer">
+								<div class="key1Container">
+									<div class="key1"></div>
+									<p class="keyText">Occupied</p>
+								</div>
+								<div class="key2Container">
+									<div class="key2"></div>
+									<p class="keyText">Available</p>
+								</div>
+								<div class="key3Container">
+									<div class="key3"></div>
+									<p class="keyText">Now Available</p>
+								</div>
+								<div class="key4Container">
+										<div class="key4"></div>
+										<p class="keyText">Unavailable</p>
+									</div>
+							</div>
+
+						<div class="graph1Container">
+							<div class="doughnutContainer">
+								<canvas id="myDoughnutChart"></canvas>
+							</div>
+						</div>
 					</div>
 					<div class="graph2Container">
-					<div id='mydiv' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart'></canvas></div>
-					</div>
+						<div id='mydiv' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart' ></canvas></div>
+						</div>
+						
 				</div>
 			</div>
 
@@ -64,7 +90,7 @@
 						<div class="playContainer">
 							<button class="playButton">
 								<i id="playPause" class="fa fa-play"></i>
-								<div id="loadingBar"></div>
+								<div id="loadingBar" class="resetWidth"></div>
 							</button>
 						</div>
 
