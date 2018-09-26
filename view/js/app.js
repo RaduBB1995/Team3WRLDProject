@@ -45,6 +45,13 @@ var halfYTimeOcc = 0;
 var oneYTimeOcc = 0;
 var oneHalfYTimeOcc = 0;
 var twoYTimeOcc = 0;
+
+var chairOccCount = 0;
+var chairYOccCount = 0;
+var chairYYOccCount = 0;
+
+var chairYCurrArr = [];
+var chairYYCurrArr = [];
 //get WRLD api key
 
 const keys = {
@@ -66,7 +73,7 @@ let chairGroup = new L.featureGroup();
 chairGroup.on('click', function(e)
  {
    console.log("Chair clicked: " + e.layer.options.label);
-
+   populateChairChart(e.layer.options.label);
    //e.layer.bindPopup("Chair #" + chairGroup.getLayerId(e.layer), {closeOnClick: false, autoClose:true, indoorMapId: 'westport_house', indoorMapFloorId: 0}).openPopup();
    //console.log("clicked on chair " + chairGroup.getLayerId(e.layer))
    //console.log("at: " + e.layer.getPopup().getLatLng());
@@ -278,6 +285,38 @@ function populateRestaurantChart(){
      }
  });
 }
+
+function populateChairChart(chairID){
+  chairOccCount = 0;
+  chairYOccCount = 0;
+  chairYYOccCount = 0;
+
+  chairYCurrArr = findTimeStamp(get_Tstamp.calculate_Tstamp(hour ,(dayAdjusted - 24)),chairPolys);
+  chairYYCurrArr = findTimeStamp(get_Tstamp.calculate_Tstamp(hour,(dayAdjusted - 48)), chairPolys);
+
+  actualChairInfo.forEach((currChairInfo) =>{
+    if(currChairInfo.properties.chairID === chairID){
+      chairOccCount = currChairInfo.properties.UniqueOccupants;
+    }
+  });
+
+  chairYCurrArr.forEach((currYChairInfo)=>{
+    if(currYChairInfo.properties.chairID === chairID){
+      chairYOccCount = currYChairInfo.properties.UniqueOccupants;
+    }
+  });
+
+  chairYYCurrArr.forEach((currYYChairInfo)=>{
+    if(currYYChairInfo.properties.chairID === chairID){
+      chairYYOccCount = currYYChairInfo.properties.UniqueOccupants;
+    }
+  });
+
+  console.log(chairOccCount);
+  console.log(chairYOccCount);
+  console.log(chairYYOccCount);
+}
+
 
 
 function sliderToHour() {
