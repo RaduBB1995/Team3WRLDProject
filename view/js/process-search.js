@@ -14,6 +14,5 @@ exports.findTimeStamp = function(timestamp, chairPolys){
           searchInfo.push(chairPoly);
         }
     });
-    console.log(searchInfo);
     return searchInfo;
 }
