@@ -238,7 +238,7 @@ html,body {
 						}
 					}
 
-					
+
 				}
 			}
 
@@ -599,4 +599,95 @@ text-align:center;
 		letter-spacing: 7px;
 		z-index: 50
 	}
+}
+
+
+////////////////////
+//CRAIG
+
+
+.graph {
+  //background-size: 16px 16px;
+  height: 130px;
+  position: relative;
+  width: 100%;
+	margin-left:78px;
+
+  & > div {
+    background-color: #000;
+    background-image: linear-gradient(rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%);
+    border-radius: 3px 3px 0 0;
+    bottom: 0;
+    cursor: pointer;
+    height: 0;
+    position: absolute;
+    transition: background-image 1s ease-out, opacity .3s ease-out;
+    width: 3.33333333%;
+
+    &:hover {
+      background-image: linear-gradient(to right, rgba(255, 255, 255, .25) 0%, rgba(255,255,255,.1) 33%, rgba(255, 255, 255, .1) 66%, rgba(255, 255, 255, .25) 100%);
+      opacity: 1 !important;
+    }
+  }
+
+  &.average > div {
+    background-color: #2B96D1;
+  }
+}
+
+.transition-selection,
+.source-selection {
+  background-color: rgba(0, 0, 0, .125);
+  margin-bottom: 1em;
+  padding: 1em;
+}
+
+.source-selection {
+  button + label,
+  label + label {
+    margin-left: 1em;
+  }
+}
+
+.transition-selection {
+  margin-top: 3em;
+  label {
+    display: block;
+
+    & + label {
+      margin-top: .5em;
+    }
+  }
+  p {
+    margin: 0 0 .5em;
+  }
+}
+
+
+.barXInfo{
+	margin-left: 78px;
+	font-size: 10pt;
+	font-family: "Arimo";
+	color: #7c7c7c;
+}
+
+.leftP{
+	width: 20px;
+    margin-top: 0px;
+    display: inline-block;
+    margin-right: 36px;
+    margin-left: 2px;
+}
+
+.middleP{
+	width: 20px;
+		margin-top: 0px;
+		display: inline-block;
+		margin-right: 26px;
+}
+
+.rightP{
+	width: 20px;
+		margin-top: 0px;
+		display: inline-block;
 }
