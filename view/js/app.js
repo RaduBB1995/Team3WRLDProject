@@ -45,13 +45,19 @@ var halfYTimeOcc = 0;
 var oneYTimeOcc = 0;
 var oneHalfYTimeOcc = 0;
 var twoYTimeOcc = 0;
-
+var uoArray = [];
+var yuoArray = [];
 var chairOccCount = 0;
 var chairYOccCount = 0;
 var chairYYOccCount = 0;
 
 var chairYCurrArr = [];
 var chairYYCurrArr = [];
+
+var chairYCurrArr = [];
+var chairYYCurrArr = [];
+
+var chairArray = [];
 //get WRLD api key
 
 const keys = {
@@ -184,12 +190,8 @@ window.onload = function() {
 
 buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant</h2></div>\
 <div id='restaurantinfo'>\
-	<div id='restaurantinfo1'><p><svg height='100' width='500' >\
-						<rect  x='55' y='55' width= '198' height='10' stroke='black' stroke-width='4' fill='red'  />\
-						<rect id = 'bar' x='55' y='57' width= '0' height='6' stroke='black' stroke-width='0' fill='green' />\
-					</svg>\
-					</div>\
-					</div>\
+	<div id='restaurantinfo1'>\
+	<div id='mydiv2' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart2'></canvas></div>\
 	<div id='restaurantinfo2'><p>Seats available here</p></div>\
 	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
@@ -362,7 +364,7 @@ function sliderToHour() {
 		}
 
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
-		document.getElementById("bar").setAttribute('width',  availableSeats*3);
+		//document.getElementById("bar").setAttribute('width',  availableSeats*3);
 	   document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
 		buildingPoly.getPopup().setContent();
@@ -378,7 +380,14 @@ function updateChart(myDoughnutChart, chairDoughnutData)
 	});
 	myDoughnutChart.update();
 }
-
+function updateBarChart(myChart, uoArray)
+{
+	myChart.data.datasets.forEach((dataset) =>{
+		dataset.data.push(uoArray);
+		console.log("push occuried");
+	});
+	myChart.update();
+}
 var doughnutO = 0;
 var doughnutNO = 0;
 var doughnutNC = 0;
@@ -404,6 +413,18 @@ function getColour(chair){
 	}
 }
 
+function createBarDataArray(){
+	uoArray[4] = currOccupancy;
+	uoArray[3] = halfTimeOcc;
+	uoArray[2] = oneTimeOcc;
+	uoArray[1] = oneHalfTimeOcc;
+	uoArray[0] = twoTimeOcc;
+	yuoArray[4] = currYOccupancy;
+	yuoArray[3] = halfYTimeOcc;
+	yuoArray[2] = oneYTimeOcc;
+	yuoArray[1] = oneHalfYTimeOcc;
+	yuoArray[0] = twoYTimeOcc;
+}
 function titleStatus(chair){
 	if(chair.properties.status === "occupied"){
 		return "Seat Unavailable";
@@ -498,7 +519,11 @@ chairGroup.addLayer(polyChair);
 
 
 		createDoughnutDataArray();
+		createBarDataArray();
+		updateBarChart(myChart, uoArray);
 		updateChart(myDoughnutChart, chairDoughnutData);
+		DrawChart();
+
 }
 
 function checkValue(event) {
@@ -771,3 +796,133 @@ function time(){
     console.log("TIME IS:" + timeFromTimeStamp);
 	$("#clock").html(timeFromTimeStamp);
 }
+
+var ctx2 = document.getElementById("myChart").getContext('2d');
+var myChart = new Chart(ctx2, {
+    type: 'bar',
+  data: {
+		datasets: [{
+			label: 'Yesterday',
+          data: yuoArray,
+		backgroundColor: [
+			'rgba(32, 252, 241, 0.5)',
+				'rgba(32, 252, 241, 0.5)',
+				'rgba(32, 252, 241, 0.5)',
+				'rgba(32, 252, 241, 0.5)',
+				'rgba(32, 252, 241, 0.5)'
+
+
+			],
+			 xAxesID: "bar-x-axis1"
+		},
+		{
+          label: 'Today',
+			data: uoArray,
+			backgroundColor: [
+			'rgba(0, 110, 244, 0.50)',
+				'rgba(0, 110, 244, 0.50)',
+				'rgba(0, 110, 244, 0.50)',
+				'rgba(0, 110, 244, 0.50)',
+				'rgba(244, 0, 0, 0.50)'
+			],
+
+          type: 'bar',
+		  xAxesID: 'bar-x-axis2'
+        }],
+
+		// These labels appear in the legend and in the tooltips when hovering different arcs
+		labels: [
+			'2hrs',
+			'1.5hrs',
+			'1hr',
+			'.5hrs',
+			'Current'
+
+		]
+	},
+	options: {
+  scales: {
+    xAxes: [{
+      stacked: false,
+      id: "bar-x-axis1",
+      barThickness: 15,
+	  gridLines: {
+        offsetGridLines: true,
+		drawOnChartArea: false
+      }
+    }, {
+
+      display: false,
+      stacked: false,
+      id: "bar-x-axis2",
+      barThickness: 70,
+      // these are needed because the bar controller defaults set only the first x axis properties
+      type: 'category',
+      categoryPercentage: 0.5,
+      barPercentage: 0.9,
+      gridLines: {
+        offsetGridLines: true,
+		drawOnChartArea: false
+      }
+    }],
+    yAxes: [{
+      stacked: false,
+      ticks: {
+        beginAtZero: true
+      },
+	   gridLines: {
+        offsetGridLines: true,
+		drawOnChartArea: false
+      }
+    }]
+
+  }
+}
+})
+
+function DrawChart(){
+	var ctx3 = document.getElementById("myChart2").getContext('2d');
+	var myChart2 = new Chart(ctx3, {
+		type: 'horizontalBar',
+		data: {
+			 labels: ['Avialability'],
+			datasets: [{
+				//label: '# of Votes',
+				data: [doughnutO],
+				backgroundColor: [
+				  'rgba(255, 40, 40, 0.49)'
+				],
+				label: ["Unavailable"]
+			},
+			{
+				 data: [doughnutNO],
+				 data: [doughnutNC],
+				backgroundColor: [
+					'rgba(19, 218, 5, 0.5)'
+				],
+				label: ["To be Cleared"]
+			},
+			{
+				data: [doughnutNC],
+				backgroundColor: [
+					'rgba(218, 204, 5, 0.5)'
+				],
+				label: ["Available"]
+			}
+			]
+		},
+		options: {
+			scales: {
+				xAxes: [{
+					stacked: true
+				}],
+				yAxes: [{
+					stacked: true
+				}]
+			}
+		}
+	})
+	}
+	buildingPoly.on("click", (event, MouseEvent) => {
+	DrawChart();
+})
