@@ -552,17 +552,8 @@ var myDoughnutChart = new Chart(ctx, {
 				'#ff0a1e',
 				'#f3e658',
 				'#1df460'
-
 			]
 		}],
-
-		// These labels appear in the legend and in the tooltips when hovering different arcs
-		labels: [
-			'Unavailable',
-			'To Be Cleared',
-			'Available'
-
-		]
 	}
 });
 //increment slider when play button is clicked
