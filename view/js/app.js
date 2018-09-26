@@ -345,12 +345,14 @@ function updateChart(myDoughnutChart, chairDoughnutData)
 var doughnutO = 0;
 var doughnutNO = 0;
 var doughnutNC = 0;
+var doughnutC = 0;
 
 
 function createDoughnutDataArray(){
 	chairDoughnutData[0] = doughnutO;
 	chairDoughnutData[1] = doughnutNO;
 	chairDoughnutData[2] = doughnutNC;
+	chairDoughnutData[3] = doughnutC;
 }
 
 function getColour(chair){
@@ -404,6 +406,7 @@ function resetPolyColors(){
 	doughnutO = 0;
 	doughnutNO = 0;
 	doughnutNC = 0;
+	doughnutC = 0;
 	chairGroup.eachLayer(
 		function(layer){
 		 map.removeLayer(layer)
@@ -420,8 +423,8 @@ function resetPolyColors(){
 			seatcolour = "#00f272";
 			doughnutNC += 1;
 		}else if(currentChair.properties.status === "closed"){
-  		seatcolour = "#ffffff";
-      doughnutO +=1;
+  			seatcolour = "#ffffff";
+     	 doughnutC +=1;
       console.log("Test");
   	}
 	 //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
@@ -551,10 +554,22 @@ var myDoughnutChart = new Chart(ctx, {
 			backgroundColor: [
 				'#ff0a1e',
 				'#f3e658',
-				'#1df460'
+				'#1df460',
+				'#d3d3d3'
 			]
 		}],
-	}
+		labels: [
+			'Occupied',
+			'Available',
+			'Now Available',
+			'Unavailable'
+		]
+	},
+	options: {
+        legend: {
+            display: false,
+        },
+    },
 });
 //increment slider when play button is clicked
 function incrementSlider(){
