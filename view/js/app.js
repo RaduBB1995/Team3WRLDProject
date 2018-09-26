@@ -179,12 +179,8 @@ window.onload = function() {
 
 buildingPoly.bindPopup("<div id='restauranttitle'><h2>Westport Hotel Restaurant</h2></div>\
 <div id='restaurantinfo'>\
-	<div id='restaurantinfo1'><p><svg height='100' width='500' >\
-						<rect  x='55' y='55' width= '198' height='10' stroke='black' stroke-width='4' fill='red'  />\
-						<rect id = 'bar' x='55' y='57' width= '0' height='6' stroke='black' stroke-width='0' fill='green' />\
-					</svg>\
-					</div>\
-					</div>\
+	<div id='restaurantinfo1'>\
+		<div id='mydiv2' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart2'></canvas></div>\
 	<div id='restaurantinfo2'><p>Seats available here</p></div>\
 	<div id='restaurantopen' style='display:block'><p><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
@@ -327,13 +323,14 @@ function sliderToHour() {
 		}
 
 		//console.log("Open element: " + document.getElementById('restaurantopen').style.display);
-		document.getElementById("bar").setAttribute('width',  availableSeats*3);
+		//document.getElementById("bar").setAttribute('width',  availableSeats*3);
 	   document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
 		//console.log("Closed element: " + document.getElementById('restaurantclosed').style.display);
 		buildingPoly.getPopup().setContent();
 			//fetchTimestamp(sliderTimeStamp);
 
 }
+
 
 function updateChart(myDoughnutChart, chairDoughnutData)
 {
@@ -342,6 +339,15 @@ function updateChart(myDoughnutChart, chairDoughnutData)
 		console.log("push occuried");
 	});
 	myDoughnutChart.update();
+}
+
+function updateStackedChart(myChart2, chairDoughnutData)
+{
+myChart2.data.datasets.forEach((dataset) =>{
+		dataset.data.push(chairDoughnutData);
+		console.log("push occuried");
+	});
+	myChart2.update();
 }
 function updateBarChart(myChart, uoArray)
 {
@@ -480,6 +486,8 @@ chairGroup.addLayer(polyChair);
 		createDoughnutDataArray();
 		createBarDataArray();
 		updateBarChart(myChart, uoArray);
+		updateStackedChart(myChart2, chairDoughnutData);
+		DrawChart();
 		updateChart(myDoughnutChart, chairDoughnutData);
 }
 
@@ -822,5 +830,95 @@ var myChart = new Chart(ctx2, {
 
   }
 }
-});
+})
+
+
+var ctx3 = document.getElementById("myChart2").getContext('2d');
+var myChart2 = new Chart(ctx3, {
+    type: 'horizontalBar',
+    data: {
+        labels: ['Avialability'],
+        datasets: [{
+            //label: '# of Votes',
+            data: [doughnutO],
+            backgroundColor: [
+              'rgba(255, 40, 40, 0.49)'
+            ],
+			label: ["Unavailable"]
+        },
+		{
+			 data: [doughnutNC],
+            backgroundColor: [
+                'rgba(218, 204, 5, 0.5)'
+            ],
+			label: ["To be Cleared"]
+		},
+		{
+			 data: [doughnutNO],
+            backgroundColor: [
+				'rgba(19, 218, 5, 0.5)'
+            ],
+			label: ["Available"]
+		}
+		]
+    },
+	options: {
+        scales: {
+            xAxes: [{
+                stacked: true
+            }],
+            yAxes: [{
+                stacked: true
+            }]
+        }
+    }
+})
+
+function DrawChart(){
+var ctx3 = document.getElementById("myChart2").getContext('2d');
+var myChart2 = new Chart(ctx3, {
+    type: 'horizontalBar',
+    data: {
+         labels: ['Avialability'],
+        datasets: [{
+            //label: '# of Votes',
+            data: [doughnutO],
+            backgroundColor: [
+              'rgba(255, 40, 40, 0.49)'
+            ],
+			label: ["Unavailable"]
+        },
+		{
+			 data: [doughnutNC],
+            backgroundColor: [
+                'rgba(218, 204, 5, 0.5)'
+            ],
+			label: ["To be Cleared"]
+		},
+		{
+			 data: [doughnutNO],
+            backgroundColor: [
+				'rgba(19, 218, 5, 0.5)'
+            ],
+			label: ["Available"]
+		}
+		]
+    },
+	options: {
+        scales: {
+            xAxes: [{
+                stacked: true
+            }],
+            yAxes: [{
+                stacked: true
+            }]
+        }
+    }
+})
+}
+buildingPoly.on("click", (event, MouseEvent) => {
+DrawChart();
+})
+ 
+
 
