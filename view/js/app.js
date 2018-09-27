@@ -156,6 +156,7 @@ window.addEventListener('load', async () => {
 																																				+ "</div>",
 																																				{closeOnClick: true,
 																																				autoClose:true,
+																																				closeButton:false,
 																																				indoorMapId: 'westport_house',
 																																				indoorMapFloorId: 0})
 																																				.addTo(map);
@@ -196,11 +197,12 @@ window.onload = function() {
 
 buildingPoly.bindPopup("<div id='restauranttitle'><h2 style='font-size: 30px;' > Westport Hotel Restaurant</h2></div>\
 <div id='restaurantinfo'>\
+  	<div class='capacity'><p style='font-size: 14px;'>Capacity: 66</p></div>\
 	<div id='restaurantinfo1'>\
 	<div id='mydiv2' style='margin-right:10px;'><canvas style='clear:both; position: relative;' id='myChart2'></canvas></div>\
 	<div id='restaurantinfo2' style='font-size: 14px;'><p>Seats available here</p></div>\
-	<div id='restaurantopen' style='display:block'><p style='font-size: 14px;'><span style='color:green'>OPEN</span>. Closes at 11:00pm</p></div>\
-	<div id='restaurantclosed' style='display:none'><p style='font-size: 14px;'><span style='color:red'>CLOSED</span>. Opens at 5:00pm</p></div>\
+	<div id='restaurantopen' style='display:block'><p style='font-size: 14px;'><span style='color:green'>OPEN</span>. Closes at 6:00pm</p></div>\
+	<div id='restaurantclosed' style='display:none'><p style='font-size: 14px;'><span style='color:red'>CLOSED</span>. Opens at 9:00am</p></div>\
 	<div id='westportinfo'><p style='font-size: 14px;'><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
 </div>", {className: 'infopopupexterior', closeOnClick: true, autoClose: false, offset:[0,-50], closeButton: false}).openPopup();
 
@@ -515,6 +517,7 @@ function resetPolyColors(){
 																																				+ "</div>",
 																																				{closeOnClick: true,
 																																				autoClose:true,
+																																				closeButton:false,
 																																				indoorMapId: 'westport_house',
 																																				indoorMapFloorId: 0})
 //add created variable to featureGroup
@@ -630,8 +633,8 @@ var myDoughnutChart = new Chart(ctx, {
 		}],
 		labels: [
 			'Occupied',
-			'Available',
 			'Now Available',
+			'Available',
 			'Unavailable'
 		]
 	},
