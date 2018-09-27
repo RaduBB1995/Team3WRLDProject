@@ -516,13 +516,11 @@ chairGroup.addLayer(polyChair);
 		function(layer){
 			map.addLayer(layer)}
 		)
-
-
 		createDoughnutDataArray();
 		createBarDataArray();
 		updateBarChart(myChart, uoArray);
 		updateChart(myDoughnutChart, chairDoughnutData);
-		DrawChart();
+		//DrawChart();
 
 }
 
@@ -880,49 +878,49 @@ var myChart = new Chart(ctx2, {
 }
 })
 
-function DrawChart(){
-	var ctx3 = document.getElementById("myChart2").getContext('2d');
-	var myChart2 = new Chart(ctx3, {
-		type: 'horizontalBar',
-		data: {
-			 labels: ['Avialability'],
-			datasets: [{
-				//label: '# of Votes',
-				data: [doughnutO],
-				backgroundColor: [
-				  'rgba(255, 40, 40, 0.49)'
-				],
-				label: ["Unavailable"]
-			},
-			{
-				 data: [doughnutNO],
-				 data: [doughnutNC],
-				backgroundColor: [
-					'rgba(19, 218, 5, 0.5)'
-				],
-				label: ["To be Cleared"]
-			},
-			{
-				data: [doughnutNC],
-				backgroundColor: [
-					'rgba(218, 204, 5, 0.5)'
-				],
-				label: ["Available"]
-			}
-			]
-		},
-		options: {
-			scales: {
-				xAxes: [{
-					stacked: true
-				}],
-				yAxes: [{
-					stacked: true
-				}]
-			}
-		}
-	})
-	}
-	buildingPoly.on("click", (event, MouseEvent) => {
-	DrawChart();
-})
+// function DrawChart(){
+// 	var ctx3 = document.getElementById("myChart2").getContext('2d');
+// 	var myChart2 = new Chart(ctx3, {
+// 		type: 'horizontalBar',
+// 		data: {
+// 			 labels: ['Avialability'],
+// 			datasets: [{
+// 				//label: '# of Votes',
+// 				data: [doughnutO],
+// 				backgroundColor: [
+// 				  'rgba(255, 40, 40, 0.49)'
+// 				],
+// 				label: ["Unavailable"]
+// 			},
+// 			{
+// 				 data: [doughnutNO],
+// 				 data: [doughnutNC],
+// 				backgroundColor: [
+// 					'rgba(19, 218, 5, 0.5)'
+// 				],
+// 				label: ["To be Cleared"]
+// 			},
+// 			{
+// 				data: [doughnutNC],
+// 				backgroundColor: [
+// 					'rgba(218, 204, 5, 0.5)'
+// 				],
+// 				label: ["Available"]
+// 			}
+// 			]
+// 		},
+// 		options: {
+// 			scales: {
+// 				xAxes: [{
+// 					stacked: true
+// 				}],
+// 				yAxes: [{
+// 					stacked: true
+// 				}]
+// 			}
+// 		}
+// 	})
+// 	}
+// 	buildingPoly.on("click", (event, MouseEvent) => {
+// 	DrawChart();
+// })
