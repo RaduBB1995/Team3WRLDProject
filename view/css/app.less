@@ -84,6 +84,7 @@ html,body {
 
 		.chairdiv {
 			font-size: 8px !important;
+			text-align: center;
 		}
 
 		.leaflet-popup-tip-container {
@@ -99,21 +100,20 @@ html,body {
 		.chairlastoccupied  {
 			background: #FFFFFF;
 			color: #000000;
-			font-size: 14px;
-			float: left;
+			font-size: 12px;
 			margin-top: -10px;
-			margin-bottom: 50px;
-			margin-left: 5px
+			width:100%;
+			margin-bottom: 15px;
 		}
 
 		.chairdailyoccupants {
 			background: #FFFFFF;
 			color: #000000;
-			float: right;
-			font-size: 14px;
+			display: block;
+			width:100%;
+			font-size: 12px;
 			margin-top: -10px;
-			margin-bottom: 50px;
-			margin-right: 5px
+			margin-bottom: 25px;
 		}
 
 		.chairoccupancygraph{
@@ -140,6 +140,11 @@ html,body {
 .infopopupexterior .leaflet-popup-content-wrapper {
 	background: #FFFFFF;
 	color: #000000;
+}
+
+.pContainerChair p{
+	margin-top:0px !important;
+	margin-bottom: 0px !important;
 }
 
 .slidecontainer {
@@ -275,6 +280,7 @@ html,body {
 		color: #ffffff;
 		height: 55px;
 		display:none;
+		border:0px;
 	}
 }
 
@@ -376,6 +382,7 @@ html,body {
 				.keyText {
 					margin-bottom: 0;
 					font-size: 13px;
+					margin-top:0 !important;
 				}
 			}
 
@@ -397,6 +404,7 @@ html,body {
 					margin-bottom: 0;
 					height: 20px;
 					font-size: 13px;
+					margin-top:0 !important;
 				}
 			}
 
@@ -417,6 +425,7 @@ html,body {
 				.keyText {
 					display: inline-block;
 					margin-bottom: 0;
+					margin-top:0 !important;
 					font-size: 13px;
 				}
 			}
@@ -437,6 +446,7 @@ html,body {
 				.keyText {
 					display: inline-block;
 					margin-bottom: 0;
+					margin-top:0 !important;
 					font-size: 13px;
 				}
 			}
@@ -444,13 +454,12 @@ html,body {
 
 		.topWrapper {
 			width: 100%;
-			height: 118px;
+			height: 80%;
 		}
 		.graph1Container {
-			width: 57%;
+			width: 47%;
 			display: block;
 			float: right;
-			height: 150px;
 
 			.doughnutContainer {
 				padding-top: 26px;
@@ -459,6 +468,34 @@ html,body {
 			}
 		}
 	}
+}
+.headerP{
+	font-size: 14px;
+	font-weight: bold;
+}
+.descP{
+	font-size: 10px;
+}
+.graph2Container {
+	width: 100%;
+	display: block;
+	height: 150px;
+	margin-top: 8%;
+}
+
+.firstInfo{
+	width:100%;
+	height:40%;
+	display: block;
+}
+
+.centerTextContainer{
+	text-align: center;
+	width: 100%;
+}
+
+.centerTextContainer p{
+	margin: 0px !important;
 }
 
 /* Dropdown Button */
@@ -539,6 +576,10 @@ html,body {
 			color: #ffffff;
 			tr {
 				font-size: 9px;
+
+				&:first-child {
+					//border-bottom: 1px solid #ffffff;
+				}
 
 				td {
 					color: #ffffff;
@@ -701,7 +742,7 @@ input[type=range] {
 		border-top-right-radius: 10px;
 		width: 260px;
 
-	
+
 		#clock{
 			color: white;
 			font-size: 40px;
@@ -713,13 +754,81 @@ input[type=range] {
 	}
 }
 
-.graph2Container {
-	
-	.titleContainer2 {
-		text-align: center;
 
-		p {
-			display: inline-block;
-		}
-	}
+.graph {
+  background-size: 32px 32px;
+  height: 80px;
+  margin-left: 31.8%;
+  position: relative;
+  width: 100%;
+
+  & > div {
+    background-color: #000;
+    background-image: linear-gradient(rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%);
+    border-radius: 3px 3px 0 0;
+    bottom: 0;
+    cursor: pointer;
+    height: 0;
+    position: absolute;
+    transition: background-image 1s ease-out, opacity .3s ease-out;
+    width: 3.33333333%;
+  }
+
+  &.average > div {
+    background-color: #76ace6;
+  }
+}
+
+.transition-selection,
+.source-selection {
+  background-color: rgba(0, 0, 0, .125);
+  margin-bottom: 1em;
+  padding: 1em;
+}
+
+.source-selection {
+  button + label,
+  label + label {
+    margin-left: 1em;
+  }
+}
+
+.transition-selection {
+  margin-top: 3em;
+  label {
+    display: block;
+
+    & + label {
+      margin-top: .5em;
+    }
+  }
+  p {
+    margin: 0 0 .5em;
+  }
+}
+.barXInfo{
+	font-size: 10pt;
+	font-family: "Arimo";
+	color: #7c7c7c;
+	width:70%;
+	margin-left:15%;
+	text-align: center;
+}
+ .leftP{
+    margin-top: 0px !important;
+    display: inline-block;
+		margin-right:4% !important;
+}
+ .middleP{
+		margin-top: 0px !important;
+		display: inline-block;
+		margin-right:4% !important;
+}
+ .rightP{
+		margin-top: 0px !important;
+		display: inline-block;
+}
+
+.leaflet-content-popup p{
+	margin-top:0px;
 }
