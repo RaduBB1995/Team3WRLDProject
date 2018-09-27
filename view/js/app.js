@@ -735,22 +735,26 @@ var daySelected = 2;
 $("#link1Clicked").click(function () {
 
     daySelected = 0;
-    $("#currentDay").html("01/09/2018");
+	$("#currentDay").html("01/09/2018");
+	$('#timeSlider').trigger('change');
 });
 
 $("#link2Clicked").click(function () {
     daySelected = 1;
-    $("#currentDay").html("02/09/2018");
+	$("#currentDay").html("02/09/2018");
+	$('#timeSlider').trigger('change');
 });
 
 $("#link3Clicked").click(function () {
     daySelected = 2;
-    $("#currentDay").html("03/09/2018");
+	$("#currentDay").html("03/09/2018");
+	$('#timeSlider').trigger('change');
 });
 
 $("#link4Clicked").click(function () {
     daySelected = 3;
-    $("#currentDay").html("04/09/2018");
+	$("#currentDay").html("04/09/2018");
+	$('#timeSlider').trigger('change');
 });
 
 $(".rewindButton").click(function(){
