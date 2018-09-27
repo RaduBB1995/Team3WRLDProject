@@ -68,7 +68,7 @@ const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 
 	center: [56.459900, -2.977970],
 	maxZoom: 30,
-	zoom: 18,
+	zoom: 17,
 
 	indoorsEnabled: true,
 })
@@ -436,7 +436,7 @@ function titleStatus(chair){
 	if(chair.properties.status === "occupied"){
 		return "Seat Unavailable";
 	}else if(chair.properties.status === "recentlyOccupied"){
-		return "Waiting to be Cleared";
+		return "Now Available";
 	}else if(chair.properties.status === "notOccupied"){
 		return "Seat Available";
 	}else if(chair.properties.status === "closed"){
