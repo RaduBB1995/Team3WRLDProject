@@ -66,7 +66,7 @@ const keys = {
 
 const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 
-	center: [56.459900, -2.977970],
+	center: [56.460462, -2.978369],
 	maxZoom: 30,
 	zoom: 17,
 
@@ -201,7 +201,7 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2 style='font-size: 30px;' >
 	<div id='restaurantinfo1'>\
 	<div id='mydiv2' style='margin-right:10px;'><canvas style='clear:both; position: relative;' id='myChart2'></canvas></div>\
 	<div id='restaurantinfo2' style='font-size: 14px;'><p>Seats available here</p></div>\
-	<div id='restaurantopen' style='display:block'><p style='font-size: 14px;'><span style='color:green'>OPEN</span>. Closes at 6:00pm</p></div>\
+	<div id='restaurantopen' style='display:block'><p style='font-size: 14px;'><span style='color:green'>OPEN</span>. Closes after 6:00pm</p></div>\
 	<div id='restaurantclosed' style='display:none'><p style='font-size: 14px;'><span style='color:red'>CLOSED</span>. Opens at 9:00am</p></div>\
 	<div id='westportinfo'><p style='font-size: 14px;'><a href='http://www.westportservicedapartments.com/' target='_blank'>View the Westport House website</a></p></div>\
 </div>", {className: 'infopopupexterior', closeOnClick: true, autoClose: false, offset:[0,-50], closeButton: false}).openPopup();
@@ -436,7 +436,7 @@ function titleStatus(chair){
 	if(chair.properties.status === "occupied"){
 		return "Seat Unavailable";
 	}else if(chair.properties.status === "recentlyOccupied"){
-		return "Now Available";
+		return "To Be Cleared";
 	}else if(chair.properties.status === "notOccupied"){
 		return "Seat Available";
 	}else if(chair.properties.status === "closed"){
@@ -511,7 +511,7 @@ function resetPolyColors(){
                                                                         + "<div class='barXInfo'>"
                                                                         + "<p class ='leftP'>-48hr</p>"
                                                                         + "<p class ='middleP'>-24hr</p>"
-                                                                        + "<p class ='rightP'>current</p>"
+                                                                        + "<p class ='rightP'>now</p>"
                                                                         + "</div>"
 																																				+ "</div>"
 																																				+ "</div>",
@@ -633,7 +633,7 @@ var myDoughnutChart = new Chart(ctx, {
 		}],
 		labels: [
 			'Occupied',
-			'Now Available',
+			'To Be Cleared',
 			'Available',
 			'Unavailable'
 		]
@@ -848,11 +848,11 @@ var myChart = new Chart(ctx2, {
 
 		// These labels appear in the legend and in the tooltips when hovering different arcs
 		labels: [
-			'2hrs',
-			'1.5hrs',
-			'1hr',
-			'.5hrs',
-			'Current'
+			'-2hrs',
+			'-1.5hrs',
+			'-1hr',
+			'-.5hrs',
+			'Now'
 
 		]
 	},
@@ -915,7 +915,7 @@ function DrawChart(){
 				backgroundColor: [
 					'rgba(218, 204, 5, 0.5)'
 				],
-				label: ["Now Available"]
+				label: ["To Be Cleared"]
 			},
 			{
 				data: [doughnutNC],
