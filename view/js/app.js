@@ -1,14 +1,12 @@
 const Wrld = require('wrld.js');
 const env = require('./env');
 const sideview = require('./sideview');
-const {
-  getChairPolys
-} = require('./api-service');
+const {getChairPolys} = require('./api-service');
 const get_Tstamp = require('./get_timestamp');
-const {
-  findTimeStamp
-} = require('./process-search');
+const {findTimeStamp} = require('./process-search');
+//create chair array to receive all data from the JSON file
 let chairPolys = [];
+//create timestamp to be used to pull the relevant chair data. default: 2018-09-04 09:00:00
 var sliderTimeStamp = "2018-09-04 09:00:00";
 var hour = 0;
 var dayAdjusted = 0;
@@ -17,11 +15,11 @@ let seatcolour = "";
 var availableSeats = 0;
 //Array of JS objects we place our desired chairs into
 var actualChairInfo = [];
-
+//bool that tracks if the playbutton has been clicked in order to switch between the playing and paused states
 var playClicked = false;
-
 var sliderIncrement = 0;
 var testArray = [];
+//initialise arrays for Chart.JS
 var chairDoughnutData = [];
 var dbTimeArray = [];
 var dbdbTimeArray = [];
@@ -66,7 +64,7 @@ var chairArray = [];
 const keys = {
   wrld: env.WRLD_KEY,
 };
-
+//initialise map
 const map = Wrld.map("map", "65367fd6a1254b28843e482cbfade28d", {
 
   center: [56.460462, -2.978369],
@@ -96,8 +94,8 @@ window.addEventListener('load', async () => {
     //Run external script to connect to JSON server
     chairPolys = await getChairPolys();
     //Returns all the Data from the JSON file
-
     actualChairInfo = findTimeStamp(sliderTimeStamp, chairPolys);
+    //filter data to only current timestamp
     actualChairInfo.forEach((currentChair) => {
       if (currentChair.properties.status === "occupied") {
         seatcolour = "#fe022f";
@@ -109,6 +107,7 @@ window.addEventListener('load', async () => {
         seatcolour = "#ffffff";
       }
       //Add leaflet polygon for each seat, could easily be in an array of JS objects for easier referencing
+      //Also bind popups using chair-specific variables to make each popup referencable
       var polyChair = L.polygon(currentChair.geometry.coordinates, {
           label: currentChair.properties.chairID,
           color: seatcolour,
@@ -158,7 +157,7 @@ window.addEventListener('load', async () => {
 
 
 window.onload = function() {}
-//
+//create an array of coordinates, to be used in the creation of a polygon
 var buildingLatLong = [
   [56.459780, -2.978628],
   [56.460245, -2.978793],
@@ -168,13 +167,13 @@ var buildingLatLong = [
   [56.459906, -2.977976],
   [56.459857, -2.978132]
 ]
-
+//create the building polygon
 var buildingPoly = L.polygon(buildingLatLong, {
   color: '#7aebff'
 }).addTo(map);
 
 
-
+//bind a popup containing HTML to the polygon
 buildingPoly.bindPopup("<div id='restauranttitle'><h2 style='font-size: 30px;' > Westport Hotel Restaurant</h2></div>\
   <div id='restaurantinfo'>\
   <div class='capacity'><p style='font-size: 14px;'>Capacity: 66</p></div>\
@@ -191,9 +190,10 @@ buildingPoly.bindPopup("<div id='restauranttitle'><h2 style='font-size: 30px;' >
   offset: [0, -50],
   closeButton: false
 }).openPopup();
-
+//take current "time" and slider value - adjusted for selected day - to generate a timestamp
 function convertSlider2Timestamp(sliderHour, sliderValue) {
   sliderTimeStamp = get_Tstamp.calculate_Tstamp(sliderHour, sliderValue);
+  //call time() to update the clock
   time();
 }
 
@@ -280,7 +280,7 @@ function populateRestaurantChart() {
     }
   });
 }
-
+//populate the chair charts
 function populateChairChart(chairID) {
   chairOccCount = 0;
   chairYOccCount = 0;
@@ -312,16 +312,21 @@ function populateChairChart(chairID) {
 
 
 function sliderToHour() {
-  //assuming the slider goes from day 1 midnight at -48 to day 2 midnight at 0
+  //slider goes from -24 at midnight to 0 at midnight the next day
   var slide = document.getElementById('timeSlider').value;
   hour = 24 - Math.abs(slide % 24); //remainder is equivalent to relative simulated time
   if (daySelected === 0) {
+    //day 1, relative range -96 to -72
+    //-Math.abs necessary to convert back to positive
     dayAdjusted = -Math.abs(hour + 72);
   } else if (daySelected === 1) {
+    //day 2, relative range -72 to -48
     dayAdjusted = -Math.abs(hour + 48);
   } else if (daySelected === 2) {
+    //day 3, relative range -48 to -24
     dayAdjusted = -Math.abs(hour + 24);
   } else if (daySelected === 3) {
+    //day 4, relative range -24 to 0
     dayAdjusted = -Math.abs(hour);
   }
   //passing hour value to be used to calculate which timestamp to use
@@ -333,52 +338,58 @@ function sliderToHour() {
 
 
   availableSeats = doughnutNC + doughnutNO;
-  //hide element saying restaurant is closed, show element saying restaurant
 
 
   if (hour >= 9 && hour <= 18) {
+    //Restaurant is open, hide elements saying it's closed and show elements sayin it's open.
+    //Change sidebar title background colour to green
     document.getElementById('sidebarOpen').style.display = 'block';
     document.getElementById('sidebarOCB').style.background = '#00A000';
     document.getElementById('sidebarClosed').style.display = 'none';
     document.getElementById('restaurantopen').style.display = 'block';
     document.getElementById('restaurantclosed').style.display = 'none';
   } else {
+    //Restaurant is closed, hide elements saying it's open and show elements sayin it's closed.
+    //Change sidebar title background colour to red
     document.getElementById('sidebarOpen').style.display = 'none';
     document.getElementById('sidebarOCB').style.background = '#fe022f';
     document.getElementById('sidebarClosed').style.display = 'block';
     document.getElementById('restaurantopen').style.display = 'none';
     document.getElementById('restaurantclosed').style.display = 'block';
   }
-
+  //Set the "available seats" element to show the current number of available seats
   document.getElementById('restaurantinfo2').innerHTML = availableSeats + " seats available";
+  //setContent() somehow works to update the popup
   buildingPoly.getPopup().setContent();
 }
-
+//push data to doughnut chart
 function updateChart(myDoughnutChart, chairDoughnutData) {
   myDoughnutChart.data.datasets.forEach((dataset) => {
     dataset.data.push(chairDoughnutData);
   });
   myDoughnutChart.update();
 }
-
+//push data to bar chart
 function updateBarChart(myChart, uoArray) {
   myChart.data.datasets.forEach((dataset) => {
     dataset.data.push(uoArray);
   });
   myChart.update();
 }
+//occupancy variables for charts
 var doughnutO = 0;
 var doughnutNO = 0;
 var doughnutNC = 0;
 var doughnutC = 0;
 
 function createDoughnutDataArray() {
+  //add occupancy variables to doughnut data array
   chairDoughnutData[0] = doughnutO;
   chairDoughnutData[1] = doughnutNO;
   chairDoughnutData[2] = doughnutNC;
   chairDoughnutData[3] = doughnutC;
 }
-
+//set chair polygon colour to reflect state
 function getColour(chair) {
   if (chair.properties.status === "occupied") {
     return "#fe022f";
@@ -392,6 +403,7 @@ function getColour(chair) {
 }
 
 function createBarDataArray() {
+  //populate arrays for the bar charts
   uoArray[4] = currOccupancy;
   uoArray[3] = halfTimeOcc;
   uoArray[2] = oneTimeOcc;
@@ -405,6 +417,7 @@ function createBarDataArray() {
 }
 
 function titleStatus(chair) {
+  //Return current state to be used in a div
   if (chair.properties.status === "occupied") {
     return "Seat Unavailable";
   } else if (chair.properties.status === "recentlyOccupied") {
@@ -417,6 +430,7 @@ function titleStatus(chair) {
 }
 
 function chairStatus(chair) {
+  //Return current state to be used in a div
   if (chair.properties.status === "occupied") {
     return "Taken";
   } else if (chair.properties.status === "recentlyOccupied") {
@@ -429,20 +443,24 @@ function chairStatus(chair) {
 }
 
 function lastOccupied(chair) {
+  //Get a substring of the last occupied time to only show hour and minute
   return chair.properties.lastOccupiedTime.substring(10, 16);
 
 }
 
 function occupantsToday(chair) {
+  //return daily occupants of the chair
   return chair.properties.UniqueOccupants;
 
 }
 
 function resetPolyColors() {
+  //reset occupancy variables
   doughnutO = 0;
   doughnutNO = 0;
   doughnutNC = 0;
   doughnutC = 0;
+  //remove chair polygons from the map
   chairGroup.eachLayer(
     function(layer) {
       map.removeLayer(layer)
@@ -450,6 +468,7 @@ function resetPolyColors() {
     }
   )
   actualChairInfo.forEach((currentChair) => {
+    //set seat colours and increment occupancy variables
     if (currentChair.properties.status === "occupied") {
       seatcolour = "#fe022f";
       doughnutO += 1;
@@ -469,9 +488,7 @@ function resetPolyColors() {
       color: seatcolour,
       indoorMapId: "westport_house",
       indoorMapFloorId: 0
-    }).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">"
-      //+ Chair #" + currentChair.properties.chairID
-      +
+    }).bindPopup("<div class='chairdiv' id=chair" + currentChair.properties.chairID + ">" +
       "<div class='chairtitle' id=" + currentChair.properties.chairID + "title style='background-color: " + getColour(currentChair) + "'>" +
       "<h1 class='chairtitletext' style='text-align:center + ;'>" + titleStatus(currentChair) + "</h1>" +
       "</div>" +
@@ -500,14 +517,15 @@ function resetPolyColors() {
       })
     //add created variable to featureGroup
     chairGroup.addLayer(polyChair);
-    //add polygon to map
+
   })
+  //add layers in featuregroup to map
   chairGroup.eachLayer(
     function(layer) {
       map.addLayer(layer)
     }
   )
-
+  //create, update and draw charts
   createDoughnutDataArray();
   createBarDataArray();
   updateBarChart(myChart, uoArray);
@@ -521,23 +539,28 @@ function checkValue(event) {
 }
 
 function clickBuilding(event) {
+  //force building popup to only open at the centre of the polygon
   this.getPopup().setLatLng(this.getCenter());
 }
 
 function mouseOverBuilding(event) {
+  //set building polygon to a lighter colour
   this.setStyle({
     color: '#bff5ff'
   });
 }
 
 function mouseOutBuilding(event) {
+  //reset building polygon to darker colour
   this.setStyle({
     color: '#7aebff'
   });
 }
 
 function onEnter(event) {
+  //wait for the hardcoded entry animation to run
   setTimeout(function() {
+    //Pan the camera around to our chosen position, heading, tilt and zoom
     map.setView([56.460196, -2.978106], 19.75, {
       headingDegrees: 169,
       tiltDegrees: 20,
@@ -545,14 +568,17 @@ function onEnter(event) {
       durationSeconds: 2
     });
   }, 0);
+  //display the sidebar elements
   $("#sidebarButton").css("display", "inline-block");
   $(".sideView").css("display", "block");
   setTimeout(function() {
+    //fire a click event for the sidebar button to ensure it opens when the user enters the building
     $("#sidebarButton").trigger("click");
   }, 2000);
 }
 
 function onExit(event) {
+  //hide the sidebar elements
   $("#sidebarButton").css("display", "none");
   $(".sideView").css("display", "none");
 }
@@ -563,6 +589,7 @@ $.fn.redraw = function() {
     var redraw = this.offsetHeight;
   });
 };
+//event trackers
 map.indoors.on("indoormapenter", onEnter);
 map.indoors.on("indoormapexit", onExit);
 buildingPoly.on("mouseover", mouseOverBuilding);
@@ -573,7 +600,7 @@ $("#timeSlider").on("change", sliderToHour);
 
 
 var ctx = document.getElementById('myDoughnutChart').getContext('2d');
-
+//create the Chart.js doughnut chart
 var myDoughnutChart = new Chart(ctx, {
   type: 'doughnut',
   data: {
@@ -602,6 +629,7 @@ var myDoughnutChart = new Chart(ctx, {
 //increment slider when play button is clicked
 function incrementSlider() {
   sliderIncrement = setInterval(function() {
+    //animate a loading bar on the play/pause button to show the user it's doing something
     $("#loadingBar").toggleClass('widen');
     $("#loadingBar").css('transition', 'width 0');
     $("#loadingBar").css('-webkit-transition', 'width 0');
@@ -617,6 +645,7 @@ function incrementSlider() {
       $('#timeSlider').val(newSlide);
       $('#timeSlider').trigger('change');
     } else {
+      //if the slider reaches the end, go to the next day
       if (daySelected === 0) {
         $("#link2Clicked").trigger('click');
         $('#timeSlider').val(-Math.abs(24));
@@ -633,6 +662,7 @@ function incrementSlider() {
         $('#timeSlider').trigger('change');
       }
       if (daySelected === 3) {
+        //at the end of the last day, stop the increment
         $(".playButton").trigger('click');
       }
     }
@@ -679,7 +709,8 @@ window.onclick = function(event) {
 }
 
 var daySelected = 2;
-
+/*Set the current day when the user clicks on the respective button
+  and trigger the slider change event to update the other elements*/
 $("#link1Clicked").click(function() {
 
   daySelected = 0;
@@ -704,7 +735,7 @@ $("#link4Clicked").click(function() {
   $("#currentDay").html("04/09/2018");
   $('#timeSlider').trigger('change');
 });
-
+//increment slider by -0.5 or 0.5 if the user clicks rewind or foward
 $(".rewindButton").click(function() {
   if ($('#timeSlider').val() != -24) {
     var newSlide = -Math.abs($('#timeSlider').val()) - 0.5;
@@ -722,7 +753,7 @@ $(".forwardButton").click(function() {
 });
 
 $(".playButton").click(function() {
-
+  //change the play/pause button to pause/play and begin/end the increment
   if (playClicked === false) {
     $("#loadingBar").toggleClass('resetWidth');
     $("#loadingBar").toggleClass('widen');
@@ -748,6 +779,7 @@ $(".playButton").click(function() {
 });
 
 function time() {
+  //get the current timestamp and substring-slice to only get the hour and minute value.
   var dateAndTime = sliderTimeStamp;
   var timeFromTimeStamp;
   timeFromTimeStamp = dateAndTime.substr(11);
@@ -757,6 +789,7 @@ function time() {
 
 
 var ctx2 = document.getElementById("myChart").getContext('2d');
+//create the bar chart
 var myChart = new Chart(ctx2, {
   type: 'bar',
   data: {
@@ -839,7 +872,7 @@ var myChart = new Chart(ctx2, {
     }
   }
 })
-
+//draw the bar chart
 function DrawChart() {
   var ctx3 = document.getElementById("myChart2").getContext('2d');
   var myChart2 = new Chart(ctx3, {
