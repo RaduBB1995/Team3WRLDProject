@@ -1,71 +1,74 @@
-
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="stylesheet" href="../css/app.less" />
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-		<link href="https://cdn-webgl.wrld3d.com/wrldjs/addons/resources/latest/css/wrld.css" rel="stylesheet"/>
-		<title>SeatWrld</title>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-		<script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/latest/indoor_control.js"></script>
-		<style>
-			@import url('https://fonts.googleapis.com/css?family=Arimo|Electrolize');
+
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" href="../css/app.less" />
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+	<link href="https://cdn-webgl.wrld3d.com/wrldjs/addons/resources/latest/css/wrld.css" rel="stylesheet" />
+	<title>SeatWrld</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+	<script src="https://cdn-webgl.wrld3d.com/wrldjs/addons/indoor_control/latest/indoor_control.js"></script>
+	<style>
+		@import url('https://fonts.googleapis.com/css?family=Arimo|Electrolize');
 		</style>
-	</head>
-	<body>
-		<div id="widget-container" class="wrld-widget-container"></div>
+</head>
 
-		<div class="customUIContainer">
-			<div class="sideViewToggleContainer">
-				<button class="slideViewToggle" id="sidebarButton"><i class="fas fa-angle-left"></i></button>
-			</div>
+<body>
+	<div id="widget-container" class="wrld-widget-container"></div>
 
-			<div class="sideViewContainer">
-				<div class="sideView">
-					<div class="titleContainer">
-						<div class="Title">
+	<div class="customUIContainer">
+		<div class="sideViewToggleContainer">
+			<button class="slideViewToggle" id="sidebarButton"><i class="fas fa-angle-left"></i></button>
+		</div>
 
-							<p class="text">
-								Westport Hotel Restaurant
-							</p>
-						</div>
+		<div class="sideViewContainer">
+			<div class="sideView">
+				<div class="titleContainer">
+					<div class="Title">
+
+						<p class="text">
+							Westport Hotel Restaurant
+						</p>
 					</div>
-					<div class="openCloseContainer">
-						<div class="textContainer" id="sidebarOCB">
+				</div>
+				<div class="openCloseContainer">
+					<div class="textContainer" id="sidebarOCB">
 
-							<p class="text" id="sidebarOpen" style="display:block">
-								Open
-							</p>
-							<p class="text" id="sidebarClosed" style="display: none">
-								Closed
-							</p>
-						</div>
+						<p class="text" id="sidebarOpen" style="display:block">
+							Open
+						</p>
+						<p class="text" id="sidebarClosed" style="display: none">
+							Closed
+						</p>
 					</div>
+				</div>
 
-					<div class='capacity' style='margin-top: 10px;'><p style='font-size: 14px; text-align: center;'>Capacity: 66</p></div>
+				<div class='capacity' style='margin-top: 10px;'>
+					<p style='font-size: 14px; text-align: center;'>Capacity: 66</p>
+				</div>
 
-					<div class="topWrapper">
-						<div class="firstInfo">
+				<div class="topWrapper">
+					<div class="firstInfo">
 						<div class="keyContainer">
-								<div class="key1Container">
-									<div class="key1"></div>
-									<p class="keyText">Occupied</p>
-								</div>
-								<div class="key2Container">
-									<div class="key2"></div>
-									<p class="keyText">Available</p>
-								</div>
-								<div class="key3Container">
-									<div class="key3"></div>
-									<p class="keyText">To Be Cleared</p>
-								</div>
-								<div class="key4Container">
-										<div class="key4"></div>
-										<p class="keyText">Unavailable</p>
-									</div>
+							<div class="key1Container">
+								<div class="key1"></div>
+								<p class="keyText">Occupied</p>
 							</div>
+							<div class="key2Container">
+								<div class="key2"></div>
+								<p class="keyText">Available</p>
+							</div>
+							<div class="key3Container">
+								<div class="key3"></div>
+								<p class="keyText">To Be Cleared</p>
+							</div>
+							<div class="key4Container">
+								<div class="key4"></div>
+								<p class="keyText">Unavailable</p>
+							</div>
+						</div>
 
 						<div class="graph1Container">
 							<div class="doughnutContainer">
@@ -78,174 +81,221 @@
 							<p class='headerP'>Occupancy Overview</p>
 							<p class='descP'>Based on previous day</p>
 						</div>
-						<div id='mydiv' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart' ></canvas></div>
-						</div>
+						<div id='mydiv' style='margin-left:10px;'><canvas style='clear:both; position: relative;' id='myChart'></canvas></div>
 					</div>
 				</div>
 			</div>
-
-			<div id="hidingslider" class="slidecontainer">
-
-				<div class="clockWrapper">
-					<div class="clockContainer2">
-						<p id="clock"></p>
-					</div>
-				</div>
-
-				<div class="sliderWrapper">
-
-					<div class="mediaButtonsContainer">
-						<div class="rewindContainer">
-							<button class="rewindButton"><i class="fa fa-backward"></i></button>
-						</div>
-
-						<div class="playContainer">
-							<button class="playButton">
-								<i id="playPause" class="fa fa-play"></i>
-								<div id="loadingBar" class="resetWidth"></div>
-							</button>
-						</div>
-
-						<div class="forwardContainer">
-							<button class="forwardButton"><i class="fa fa-forward"></i></button>
-						</div>
-					</div>
-
-					<div style="display: block;"></div>
-					<div class="inputContainer">
-
-						<div class="dropdown">
-							<div id="myDropdown" class="dropdown-content">
-								<a href="#" id="link1Clicked">01/09/2018</a>
-								<a href="#" id="link2Clicked">02/09/2018</a>
-								<a href="#" id="link3Clicked">03/09/2018</a>
-								<a href="#" id="link4Clicked">04/09/2018</a>
-							</div>
-							<button id="sliderDropdownButton" class="dropbtn"><span id="currentDay">03/09/2018</span><i id="usa" class="fas fa-angle-up"></i></button>
-						</div>
-						<div class="timeSliderWrapper">
-							<input type="range" min="-24" max="0" value="-15" class="slider" id="timeSlider" step="0.5">
-							<div class="sliderLegendWrapper">
-						<div class="sliderLegend">
-							<table width=100% style='background-color: none;'>
-								<tr>
-									<td class="first">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td><td class="others">
-										|
-									</td ><td class="last">
-										|
-									</td>
-								</tr>
-								<tr>
-									<td>
-										00:00
-									</td><td>
-										01:00
-									</td><td>
-										02:00
-									</td><td>
-										03:00
-									</td><td>
-										04:00
-									</td><td>
-										05:00
-									</td><td>
-										06:00
-									</td><td>
-										07:00
-									</td><td>
-										08:00
-									</td><td>
-										09:00
-									</td><td>
-										10:00
-									</td><td>
-										11:00
-									</td><td>
-										12:00
-									</td><td>
-										13:00
-									</td><td>
-										14:00
-									</td><td>
-										15:00
-									</td>
-									<td>
-										16:00
-									</td><td>
-										17:00
-									</td><td>
-										18:00
-									</td><td>
-										19:00
-									</td>
-									<td>
-										20:00
-									</td><td>
-										21:00
-									</td><td>
-										22:00
-									</td><td>
-										23:00
-									</td><td>
-										24:00
-									</td>
-								</tr>
-							</table>
-						</div>
-					</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div id="map"></div>
 		</div>
 
-		<script src="../js/app.js"></script>
-	</body>
+		<div id="hidingslider" class="slidecontainer">
+
+			<div class="clockWrapper">
+				<div class="clockContainer2">
+					<p id="clock"></p>
+				</div>
+			</div>
+
+			<div class="sliderWrapper">
+
+				<div class="mediaButtonsContainer">
+					<div class="rewindContainer">
+						<button class="rewindButton"><i class="fa fa-backward"></i></button>
+					</div>
+
+					<div class="playContainer">
+						<button class="playButton">
+							<i id="playPause" class="fa fa-play"></i>
+							<div id="loadingBar" class="resetWidth"></div>
+						</button>
+					</div>
+
+					<div class="forwardContainer">
+						<button class="forwardButton"><i class="fa fa-forward"></i></button>
+					</div>
+				</div>
+
+				<div style="display: block;"></div>
+				<div class="inputContainer">
+
+					<div class="dropdown">
+						<div id="myDropdown" class="dropdown-content">
+							<a href="#" id="link1Clicked">01/09/2018</a>
+							<a href="#" id="link2Clicked">02/09/2018</a>
+							<a href="#" id="link3Clicked">03/09/2018</a>
+							<a href="#" id="link4Clicked">04/09/2018</a>
+						</div>
+						<button id="sliderDropdownButton" class="dropbtn"><span id="currentDay">03/09/2018</span><i id="usa" class="fas fa-angle-up"></i></button>
+					</div>
+					<div class="timeSliderWrapper">
+						<input type="range" min="-24" max="0" value="-15" class="slider" id="timeSlider" step="0.5">
+						<div class="sliderLegendWrapper">
+							<div class="sliderLegend">
+								<table width=100% style='background-color: none;'>
+									<tr>
+										<td class="first">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="others">
+											|
+										</td>
+										<td class="last">
+											|
+										</td>
+									</tr>
+									<tr>
+										<td>
+											00:00
+										</td>
+										<td>
+											01:00
+										</td>
+										<td>
+											02:00
+										</td>
+										<td>
+											03:00
+										</td>
+										<td>
+											04:00
+										</td>
+										<td>
+											05:00
+										</td>
+										<td>
+											06:00
+										</td>
+										<td>
+											07:00
+										</td>
+										<td>
+											08:00
+										</td>
+										<td>
+											09:00
+										</td>
+										<td>
+											10:00
+										</td>
+										<td>
+											11:00
+										</td>
+										<td>
+											12:00
+										</td>
+										<td>
+											13:00
+										</td>
+										<td>
+											14:00
+										</td>
+										<td>
+											15:00
+										</td>
+										<td>
+											16:00
+										</td>
+										<td>
+											17:00
+										</td>
+										<td>
+											18:00
+										</td>
+										<td>
+											19:00
+										</td>
+										<td>
+											20:00
+										</td>
+										<td>
+											21:00
+										</td>
+										<td>
+											22:00
+										</td>
+										<td>
+											23:00
+										</td>
+										<td>
+											24:00
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="map"></div>
+	</div>
+
+	<script src="../js/app.js"></script>
+</body>
+
 </html>
