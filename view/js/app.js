@@ -806,7 +806,7 @@ var myChart = new Chart(ctx2, {
 
 
         ],
-        xAxesID: "bar-x-axis1"
+        xAxesID: "xaxis1"
       },
       {
         label: 'Today',
@@ -820,7 +820,7 @@ var myChart = new Chart(ctx2, {
         ],
 
         type: 'bar',
-        xAxesID: 'bar-x-axis2'
+        xAxesID: 'xaxis2'
       }
     ],
 
@@ -837,23 +837,17 @@ var myChart = new Chart(ctx2, {
   options: {
     scales: {
       xAxes: [{
-        stacked: false,
-        id: "bar-x-axis1",
+        id: "xaxis1",
         barThickness: 15,
+		stacked: false,
         gridLines: {
           offsetGridLines: true,
           drawOnChartArea: false
         }
       }, {
-
-        display: false,
+        id: "xaxis2",
+		display: false,
         stacked: false,
-        id: "bar-x-axis2",
-        barThickness: 70,
-        // these are needed because the bar controller defaults set only the first x axis properties
-        type: 'category',
-        categoryPercentage: 0.5,
-        barPercentage: 0.9,
         gridLines: {
           offsetGridLines: true,
           drawOnChartArea: false
@@ -929,6 +923,7 @@ function DrawChart() {
     }
   })
 }
+
 buildingPoly.on("click", (event, MouseEvent) => {
   DrawChart();
 })
