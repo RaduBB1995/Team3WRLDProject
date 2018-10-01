@@ -8,6 +8,7 @@ class Chair:
         ID = 1
         Occupied = False
         RecentlyOccupied = False
+        status = 'unknown'
         LatA = 56.460166
         LongA = -2.978129
         LatB = 56.460167
@@ -17,6 +18,8 @@ class Chair:
         LatD = 56.460161
         LongD = -2.978127
         leaveChance = 55
+        lastOccupiedTime = ""
+        dailyOccupants = 0
         UniqueOccupants = 0
         tableID = 1
 
@@ -861,29 +864,26 @@ LOOP FOR OCCUPYING CHAIRS AT RANDOM
 import datetime
 import json
 count = 0;
-currenttime = datetime.datetime(2018,9,1,9,00,00)
+currtimeStr = ""
+currenttime = datetime.datetime(2018,8,28,9,00,00)
 openingtime = datetime.time(9)
 closingtime = datetime.time(18)
 timeJump = datetime.timedelta(0,1800)
 data = {}
+lastOccTimeStr = ""
 data['CHAIR_INFO'] = []
-data['CHAIR_CO_ORDS'] = []
-for x in range(163):
+for x in range(400):
+    print(currtimeStr)
     #check if restaurant is open
     if currenttime.time() >= openingtime and currenttime.time() <= closingtime:
-        print ("------------------------------")
-        print ("------------------------------")
-        print ("------------------------------")
-        print ("------------------------------")
-        print("NEW ITERATION - TimeStamp: %s" %(currenttime,))
         currtimeStr = '%s' %(currenttime,)
-        for i in range(65):
-            print("-------")
+        for i in range(66):
             from random import randint
             chance = randint(0,100)
             if chairArray[i].Occupied is True:
                 if chance < chairArray[i].leaveChance:
                     chairArray[i].Occupied = False
+                    chairArray[i].lastOccupiedTime = currenttime - timeJump
                     chairArray[i].RecentlyOccupied = True
                     chairArray[i].leaveChance = 55
                 else:
@@ -894,20 +894,58 @@ for x in range(163):
                     chairArray[i].UniqueOccupants += 1
                 if chairArray[i].RecentlyOccupied is True:
                     chairArray[i].RecentlyOccupied = False
-            print("Chair ID: %i" %(chairArray[i].ID,))
-            print("Occupation Status: %s" %(chairArray[i].Occupied,))
-            print("Unique Occupants: %i" %(chairArray[i].UniqueOccupants,))
-            print("Recently Occupied: %s" %(chairArray[i].RecentlyOccupied,))
+            if chairArray[i].Occupied is True:
+                chairArray[i].status = "occupied"
+            else:
+                if chairArray[i].Occupied is False:
+                    chairArray[i].status = "notOccupied"
+            if chairArray[i].RecentlyOccupied is True:
+                chairArray[i].status = "recentlyOccupied"
             count += 1
+            lastOccTimeStr = '%s' %(chairArray[i].lastOccupiedTime,)
             chairCoordinates = [[chairArray[i].LatA, chairArray[i].LongA],[chairArray[i].LatB,chairArray[i].LongB],[chairArray[i].LatC,chairArray[i].LongC],[chairArray[i].LatD,chairArray[i].LongD]]
-            data['CHAIR_INFO'].append({'id': count,'TimeStamp' : currtimeStr, 'ChairID' : chairArray[i].ID,'TableID' : chairArray[i].tableID, 'Occupied' : chairArray[i].Occupied, 'RecentlyOccupied' : chairArray[i].RecentlyOccupied, 'UniqueOccupants' : chairArray[i].UniqueOccupants, 'Coordinates' : chairCoordinates ,})
+            #data['CHAIR_INFO'].append({'id': count,'TimeStamp' : currtimeStr, 'ChairID' : chairArray[i].ID,'TableID' : chairArray[i].tableID, 'Occupied' : chairArray[i].Occupied, 'RecentlyOccupied' : chairArray[i].RecentlyOccupied, 'UniqueOccupants' : chairArray[i].UniqueOccupants, 'Coordinates' : chairCoordinates ,})
+            data['CHAIR_INFO'].append({'type': "Feature",
+                                        'geometry': {
+                                            'type': 'Polygon',
+                                            'coordinates' : chairCoordinates,
+                                        },
+                                        'properties': {
+                                            'id': count,
+                                            'timestamp' : currtimeStr,
+                                            'chairID' : chairArray[i].ID,
+                                            'tableID' : chairArray[i].tableID,
+                                            'status' : chairArray[i].status,
+                                            'lastOccupiedTime' : lastOccTimeStr,
+                                            'UniqueOccupants' : chairArray[i].UniqueOccupants,
+                                        }})
     else:
-        print("%s - Restaurant Closed" %(currenttime.time(),))
         #Restaurant is closed between 6pm and 9am so reset all seat status's
-        for i in range(65):
+        for i in range(66):
+            currtimeStr = '%s' %(currenttime,)
             chairArray[i].Occupied = False
             chairArray[i].RecentlyOccupied = False
             chairArray[i].leaveChance = 55
+            chairArray[i].status = "closed"
+            chairArray[i].UniqueOccupants = 0
+            chairArray[i].lastOccupiedTime = ""
+            lastOccTimeStr = '%s' %(chairArray[i].lastOccupiedTime,)
+            chairCoordinates = [[chairArray[i].LatA, chairArray[i].LongA],[chairArray[i].LatB,chairArray[i].LongB],[chairArray[i].LatC,chairArray[i].LongC],[chairArray[i].LatD,chairArray[i].LongD]]
+            #data['CHAIR_INFO'].append({'id': count,'TimeStamp' : currtimeStr, 'ChairID' : chairArray[i].ID,'TableID' : chairArray[i].tableID, 'Occupied' : chairArray[i].Occupied, 'RecentlyOccupied' : chairArray[i].RecentlyOccupied, 'UniqueOccupants' : chairArray[i].UniqueOccupants, 'Coordinates' : chairCoordinates ,})
+            data['CHAIR_INFO'].append({'type': "Feature",
+                                        'geometry': {
+                                            'type': 'Polygon',
+                                            'coordinates' : chairCoordinates,
+                                        },
+                                        'properties': {
+                                            'id': count,
+                                            'timestamp' : currtimeStr,
+                                            'chairID' : chairArray[i].ID,
+                                            'tableID' : chairArray[i].tableID,
+                                            'status' : chairArray[i].status,
+                                            'lastOccupiedTime' : lastOccTimeStr,
+                                            'UniqueOccupants' : chairArray[i].UniqueOccupants,
+                                        }})
     currenttime += timeJump
 with open('data.txt', 'w') as outfile:
     json.dump(data, outfile)
