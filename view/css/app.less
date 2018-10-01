@@ -83,6 +83,7 @@ html {
 
 		.leaflet-popup-tip-container {
 			font-size: 2px !important;
+
 		}
 
 		.chairtitle {
@@ -136,6 +137,9 @@ html {
 .infopopupexterior .leaflet-popup-tip {
 	background: #FFFFFF;
 	color: #000000;
+}
+.leaflet-popup-tip {
+	display:block;
 }
 
 .pContainerChair p {
@@ -735,13 +739,14 @@ input[type=range] {
 		}
 	}
 }
-
+//bar chart code credit: https://codepen.io/tbusser-itouch/pen/zxNPRK
 .graph {
 	background-size: 32px 32px;
 	height: 80px;
 	margin-left: 31.8%;
 	position: relative;
 	width: 100%;
+	margin-bottom: 5px;
 
 	& > div {
 		background-color: #000;
@@ -797,6 +802,8 @@ input[type=range] {
 	width: 70%;
 	margin-left: 15%;
 	text-align: center;
+	position:relative;
+	margin-bottom: 20px;
 }
 
 .leftP {

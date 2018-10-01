@@ -508,6 +508,7 @@ function resetPolyColors() {
       "<p class ='rightP'>now</p>" +
       "</div>" +
       "</div>" +
+      "</div>" +
       "</div>", {
         closeOnClick: true,
         autoClose: true,
@@ -931,6 +932,7 @@ function DrawChart() {
 buildingPoly.on("click", (event, MouseEvent) => {
   DrawChart();
 })
+//bar chart code credit: https://codepen.io/tbusser-itouch/pen/zxNPRK
 
 function barChart() {
   'use strict';
